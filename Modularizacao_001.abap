@@ -163,3 +163,43 @@ APPEND ls_rspfli TO lt_spfli.
 cl_demo_output=>display( lt_spfli ).
 
 MODIFY zrl_spfli FROM TABLE lt_spfli.
+
+"----------------------------------------------------------------------------------------------------------------------
+
+                                                    "[FUNÇÃO RFC]
+
+"----------------------------------------------------------------------------------------------------------------------
+
+FUNCTION zrl_get_conections.
+*"----------------------------------------------------------------------
+*"*"Interface local:
+*"  IMPORTING
+*"     REFERENCE(CARRID) TYPE  S_CARR_ID
+*"  TABLES
+*"      IT_TABLE
+*"  EXCEPTIONS
+*"      NO_DATA_FOUND
+*"----------------------------------------------------------------------
+
+  SELECT carrid,
+         airpfrom,
+         airpto,
+         fltime,
+         deptime,
+         arrtime,
+         distance,
+         distid,
+         fltype
+         FROM zrl_spfli
+         INTO CORRESPONDING FIELDS OF TABLE @IT_TABLE
+         WHERE carrid = @carrid.
+
+ENDFUNCTION.
+
+"----------------------------------------------------------------------------------------------------------------------
+
+                                                  "[MAIN REPORT]
+
+"----------------------------------------------------------------------------------------------------------------------
+
+
