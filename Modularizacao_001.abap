@@ -170,13 +170,13 @@ MODIFY zrl_spfli FROM TABLE lt_spfli.
 
 "----------------------------------------------------------------------------------------------------------------------
 
-FUNCTION zrl_get_conections.
+FUNCTION ZRL_GET_CONECTIONS.
 *"----------------------------------------------------------------------
 *"*"Interface local:
 *"  IMPORTING
-*"     REFERENCE(CARRID) TYPE  S_CARR_ID
+*"     REFERENCE(IM_CARRID) TYPE  ZRL_SPFLI-CARRID
 *"  TABLES
-*"      IT_TABLE
+*"      EX_SPFLI_T
 *"  EXCEPTIONS
 *"      NO_DATA_FOUND
 *"----------------------------------------------------------------------
@@ -191,8 +191,12 @@ FUNCTION zrl_get_conections.
          distid,
          fltype
          FROM zrl_spfli
-         INTO CORRESPONDING FIELDS OF TABLE @IT_TABLE
-         WHERE carrid = @carrid.
+         INTO CORRESPONDING FIELDS OF TABLE @EX_SPFLI_T
+         WHERE carrid = @IM_CARRID.
+
+      IF sy-subrc <> 0.
+         RAISE no_data_found.
+      ENDIF.
 
 ENDFUNCTION.
 
@@ -202,4 +206,32 @@ ENDFUNCTION.
 
 "----------------------------------------------------------------------------------------------------------------------
 
+*&---------------------------------------------------------------------*
+*& Report ZTEMP004_RAFAEL_RFCS_FUNCOES
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ztemp004_rafael_rfcs_funcoes.
 
+DATA: lt_spfli  TYPE STANDARD TABLE OF zrl_spfli,
+      ls_rspfli TYPE zrl_spfli.
+
+PARAMETERS: p_carrid TYPE zrl_spfli-carrid.
+
+START-OF-SELECTION.
+
+CALL FUNCTION 'ZRL_GET_CONECTIONS'
+  EXPORTING
+    im_carrid           = p_carrid
+  tables
+    ex_spfli_t          = lt_spfli
+ EXCEPTIONS
+   NO_DATA_FOUND       = 1
+   OTHERS              = 2
+          .
+
+  IF sy-subrc = 0.
+    cl_demo_output=>display( lt_spfli ).
+  ENDIF.
+
+"----------------------------------------------------------------------------------------------------------------------
