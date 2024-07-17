@@ -175,8 +175,8 @@ FUNCTION ZRL_GET_CONECTIONS.
 *"*"Interface local:
 *"  IMPORTING
 *"     REFERENCE(IM_CARRID) TYPE  ZRL_SPFLI-CARRID
-*"  TABLES
-*"      EX_SPFLI_T
+*"  EXPORTING
+*"     REFERENCE(EX_SPFLI_T) TYPE  ZRL_SPFLI_TT
 *"  EXCEPTIONS
 *"      NO_DATA_FOUND
 *"----------------------------------------------------------------------
@@ -223,12 +223,11 @@ START-OF-SELECTION.
 CALL FUNCTION 'ZRL_GET_CONECTIONS'
   EXPORTING
     im_carrid           = p_carrid
-  tables
-    ex_spfli_t          = lt_spfli
+  IMPORTING
+    EX_SPFLI_T          = lt_spfli
  EXCEPTIONS
    NO_DATA_FOUND       = 1
-   OTHERS              = 2
-          .
+   OTHERS              = 2.
 
   IF sy-subrc = 0.
     cl_demo_output=>display( lt_spfli ).
