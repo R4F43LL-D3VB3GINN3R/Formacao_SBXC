@@ -13,6 +13,42 @@ DATA: it_text_cv  TYPE STANDARD TABLE OF string, "Tabela interna que recebe os d
       it_text_cv2 TYPE STANDARD TABLE OF string. "Tabela interna que recebe os dados do upload.
 DATA: v_path TYPE string.                        "String << ibipparms-path.
 
+DATA: v_username TYPE sy-uname.
+v_username = sy-uname.
+
+*&---------------------------------------------------------------------*
+"Hora e Data
+DATA: lv_datenow    TYPE char10,   "Data Atual
+      lv_hour       TYPE sy-uzeit, "Hora Atual
+      lv_hour_str   TYPE string,   "Hora
+      lv_minute_str TYPE string,   "Minuto
+      lv_second_str TYPE string.   "Segundo
+
+DATA: lv_time_str TYPE string. "String para receber strings de tempo concatenadas
+
+lv_hour = sy-uzeit. "Variável recebe hora atual no sistema.
+
+" Separação da hora, minuto e segundo
+lv_hour_str   = lv_hour+0(2).
+lv_minute_str = lv_hour+2(2).
+lv_second_str = lv_hour+4(2).
+
+"Concatenando-os com ":" para formar o horário completo
+CONCATENATE lv_hour_str ':' lv_minute_str ':' lv_second_str INTO lv_time_str.
+
+"Função para formatar a data
+CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+  EXPORTING
+    date_internal = sy-datum
+  IMPORTING
+    date_external = lv_datenow.
+
+DATA: v_footer TYPE string.
+v_footer = 'Relatório de Candidatos: '.
+
+"Juntando o título, a data e a hora
+CONCATENATE v_footer lv_datenow lv_time_str INTO v_footer SEPARATED BY ' / '.
+
 "----------------------------------------------------------
 "0. Menu de Selecao
 
@@ -30,7 +66,7 @@ START-OF-SELECTION.
   IF rb_um EQ 'X'.
     PERFORM import_file_txt.
   ELSEIF rb_todos EQ 'X'.
-    PERFORM download_file_txt.
+    PERFORM load_file_txt.
   ENDIF.
 
 END-OF-SELECTION.
@@ -86,15 +122,18 @@ ENDFORM.
 *& -->  p1        text
 *& <--  p2        text
 *&---------------------------------------------------------------------*
-FORM download_file_txt .
+FORM load_file_txt .
 
-  DATA: path2 TYPE string.
-  DATA: count TYPE i.
-  DATA: numdoc TYPE string.
-  DATA: extension TYPE string.
+  DATA: path2     TYPE string,
+        count     TYPE i,
+        numdoc    TYPE string,
+        extension TYPE string.
 
   count = 0.
   extension = 'txt'.
+
+  APPEND ' ' TO it_text_cv2.
+  APPEND '------------------------------------------------------------' TO it_text_cv2.
 
   DO 2 TIMES.
     count = count + 1.
@@ -117,9 +156,15 @@ FORM download_file_txt .
         data_tab            = it_text_cv.
 
     APPEND LINES OF it_text_cv TO it_text_cv2.
+    APPEND '------------------------------------------------------------' TO it_text_cv2.
     APPEND ' ' TO it_text_cv2.
+    APPEND '------------------------------------------------------------' TO it_text_cv2.
 
   ENDDO.
+
+  APPEND v_footer TO it_text_cv2.
+  APPEND v_username TO it_text_cv2.
+  APPEND '--------------------' TO it_text_cv2.
 
   IF sy-subrc EQ 0.
     cl_demo_output=>display( it_text_cv2 ).
