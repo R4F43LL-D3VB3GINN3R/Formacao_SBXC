@@ -43,31 +43,31 @@ PARAMETERS: rb_up RADIOBUTTON GROUP grp1 DEFAULT 'X',
             rb_dl RADIOBUTTON GROUP grp1.
 SELECTION-SCREEN: END OF BLOCK a2.
 SELECTION-SCREEN: BEGIN OF BLOCK a3 WITH FRAME TITLE TEXT-003.
-PARAMETERS: p_path TYPE string.
+PARAMETERS: p_path TYPE IBIPPARMS-PATH.
 SELECTION-SCREEN: END OF BLOCK a3.
 SELECTION-SCREEN: SKIP 1.
-
-CALL FUNCTION 'F4_FILENAME'
-  EXPORTING
-    program_name  = syst-cprog
-    dynpro_number = syst-dynnr
-    field_name    = ' '
-  IMPORTING
-    file_name     = p_path.
 
 START-OF-SELECTION.
 
   PERFORM selecionar_candidato.
 
-  IF rb_up eq 'X'.
+  IF rb_up EQ 'X'.
     PERFORM import_file_txt.
-  ELSEIF rb_dl eq 'X'.
+  ELSEIF rb_dl EQ 'X'.
     PERFORM download_file_txt.
   ENDIF.
 
 END-OF-SELECTION.
 
 AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_path.
+
+    CALL FUNCTION 'F4_FILENAME'
+      EXPORTING
+        program_name  = syst-cprog
+        dynpro_number = syst-dynnr
+        field_name    = ' '
+      IMPORTING
+        file_name     = p_path.
 
 *&---------------------------------------------------------------------*
 *& Form IMPORT_FILE_TXT
@@ -91,7 +91,6 @@ FORM import_file_txt .
       data_tab            = it_text_cv.
 
   IF sy-subrc EQ 0.
-    it_text2_cv[] = it_text_cv[].
   ENDIF.
 
 ENDFORM.
