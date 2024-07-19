@@ -159,7 +159,7 @@ FORM load_file_txt .
     APPEND '------------------------------------------------------------' TO it_text_cv2.
     APPEND ' ' TO it_text_cv2.
     APPEND '------------------------------------------------------------' TO it_text_cv2.
-
+    
   ENDDO.
 
   APPEND v_footer TO it_text_cv2.
