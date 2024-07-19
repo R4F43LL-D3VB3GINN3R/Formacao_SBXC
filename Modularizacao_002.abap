@@ -12,6 +12,8 @@ REPORT z_rla_candidatos.
 DATA: it_text_cv  TYPE STANDARD TABLE OF string, "Tabela interna que recebe os dados do upload.
       it_text2_cv TYPE STANDARD TABLE OF string. "Tabela interna que recebe os dados do download.
 
+DATA: v_path TYPE string.
+
 "----------------------------------------------------------
 "0. Menu de Selecao
 
@@ -37,8 +39,6 @@ START-OF-SELECTION.
     PERFORM import_file_txt.
   ELSEIF rb_dl EQ 'X'.
     PERFORM download_file_txt.
-  ELSE.
-    MESSAGE 'Escolha uma Ação a ser realizada' TYPE 'I'.
   ENDIF.
 
 END-OF-SELECTION.
@@ -65,18 +65,6 @@ FORM import_file_txt .
 
   "2. Fazer upload do ficheiro em formato txt para uma tabela interna.
 
-  CALL FUNCTION 'GUI_UPLOAD'
-    EXPORTING
-      filename            = p_path
-      filetype            = 'ASC'
-      has_field_separator = 'X'
-      read_by_line        = 'X'
-    TABLES
-      data_tab            = it_text_cv.
-
-  IF sy-subrc EQ 0.
-  ENDIF.
-
 ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form DOWNLOAD_FILE_TXT
@@ -90,15 +78,31 @@ FORM download_file_txt .
 
   "3. Gravar o conteudo da tabela interna num ficheiro no servidor.
 
-  CALL FUNCTION 'GUI_DOWNLOAD'
-    EXPORTING
-      filename              = p_path
-      filetype              = 'ASC'
-      write_field_separator = 'X'
-    TABLES
-      data_tab              = it_text2_cv.
+  v_path = p_path.
 
-  IF sy-subrc <> 0.
+  CALL FUNCTION 'GUI_UPLOAD'
+    EXPORTING
+      filename            = v_path
+      filetype            = 'ASC'
+      has_field_separator = 'X'
+      read_by_line        = 'X'
+    TABLES
+      data_tab            = it_text_cv.
+
+  IF sy-subrc EQ 0.
+    it_text2_cv[] = it_text_cv.
+
+    CALL FUNCTION 'GUI_DOWNLOAD'
+      EXPORTING
+        filename              = v_path
+        filetype              = 'ASC'
+        write_field_separator = 'X'
+      TABLES
+        data_tab              = it_text2_cv.
+
+    IF sy-subrc EQ 0.
+      MESSAGE 'Candidato salvo com sucesso' TYPE 'S'.
+    ENDIF.
   ENDIF.
 
 ENDFORM.
@@ -123,9 +127,7 @@ FORM selecionar_candidato .
   SELECT MAX( id_candidato ) FROM znn_candidatos INTO v_id.
   v_id = v_id + 1.
 
-  "----------------------
   "Hora e Data
-
   DATA: v_data TYPE zdata,
         v_hora TYPE zhora.
 
