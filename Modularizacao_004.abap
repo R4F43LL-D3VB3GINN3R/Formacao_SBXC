@@ -8,6 +8,7 @@ REPORT z_rla_candidatos.
 TABLES: znn_candidatos.
 
 DATA: lt_text        TYPE TABLE OF string,
+      lt_candidato   type table of znn_candidatos,
       lv_path        TYPE string,
       lv_num         TYPE string,
       lv_filename    TYPE string,
@@ -86,7 +87,7 @@ FORM upload_file .
   DATA: lv_temp_dir TYPE string.
   lv_temp_dir = '.'.
 
-  CONCATENATE lv_temp_dir '\' lv_num '.txt' INTO lv_filename.
+  CONCATENATE lv_temp_dir '\' p_nome lv_num '.txt' INTO lv_filename.
   CONDENSE lv_filename.
 
   DATA: finalpath(30) TYPE c.
@@ -111,25 +112,26 @@ ENDFORM.
 *& Form submeter_candidato
 *&---------------------------------------------------------------------*
 FORM submeter_candidato .
-*  DATA: ls_candidato TYPE znn_candidatos.
-*
-*  " Formatar número com zeros à esquerda, se necessário
-*  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
-*    EXPORTING
-*      input  = lv_num
-*    IMPORTING
-*      output = lv_num.
-*
-*  ls_candidato-id_candidato = lv_num.
-*  ls_candidato-nome         = p_nome.
-*  ls_candidato-estado       = '0'. " Status '0' para Submetido
-*  ls_candidato-data         = sy-datum.
-*  ls_candidato-hora         = sy-uzeit.
-*
-*  INSERT znn_candidatos FROM ls_candidato.
-*  IF sy-subrc = 0.
-*    MESSAGE 'Candidato submetido com sucesso' TYPE 'S'.
-*  ELSE.
-*    MESSAGE 'Erro ao inserir registro na tabela de candidatos' TYPE 'E'.
-*  ENDIF.
+  DATA: ls_candidato TYPE znn_candidatos.
+
+  " Formatar número com zeros à esquerda, se necessário
+  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+    EXPORTING
+      input  = lv_num
+    IMPORTING
+      output = lv_num.
+
+  ls_candidato-id_candidato = lv_num.
+  ls_candidato-nome         = p_nome.
+  ls_candidato-estado       = '0'. " Status '0' para Submetido
+  ls_candidato-data         = sy-datum.
+  ls_candidato-hora         = sy-uzeit.
+
+  INSERT znn_candidatos FROM ls_candidato.
+  IF sy-subrc = 0.
+    append ls_candidato to lt_candidato.
+    modify znn_candidatos from table lt_candidato.
+  ELSE.
+    MESSAGE 'Erro ao inserir registro na tabela de candidatos' TYPE 'E'.
+  ENDIF.
 ENDFORM.
