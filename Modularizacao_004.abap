@@ -100,27 +100,38 @@ FORM arquivo_upload .
 
   v_path = p_path. "casting char >> str
 
-  "funcao para upload de ficheiro
-  IF p_path IS NOT INITIAL.
-    CALL FUNCTION 'GUI_UPLOAD'
-      EXPORTING
-        filename                = v_path
-        filetype                = 'ASC'
-      TABLES
-        data_tab                = it_text
-      EXCEPTIONS
-        file_read_error         = 1
-        no_batch                = 2
-        gui_refuse_filetransfer = 3
-        OTHERS                  = 4.
-    IF sy-subrc <> 0.
-      MESSAGE 'Erro ao carregar o ficheiro' TYPE 'E'.
-    ENDIF.
-  ELSE.
-    MESSAGE 'Nenhum caminho especificado' TYPE 'E'.
-  ENDIF.
+  cl_gui_frontend_services=>gui_upload(
+    EXPORTING
+      filename               = v_path            " Name of file
+      filetype               = 'ASC'             " File Type (ASCII, Binary)
+    CHANGING
+      data_tab                = it_text          " Transfer table for file contents
+    EXCEPTIONS
+      file_open_error         = 1                " File does not exist and cannot be opened
+      file_read_error         = 2                " Error when reading file
+      no_batch                = 3                " Cannot execute front-end function in background
+      gui_refuse_filetransfer = 4                " Incorrect front end or error on front end
+      invalid_type            = 5                " Incorrect parameter FILETYPE
+      no_authority            = 6                " No upload authorization
+      unknown_error           = 7                " Unknown error
+      bad_data_format         = 8                " Cannot Interpret Data in File
+      header_not_allowed      = 9                " Invalid header
+      separator_not_allowed   = 10               " Invalid separator
+      header_too_long         = 11               " Header information currently restricted to 1023 bytes
+      unknown_dp_error        = 12               " Error when calling data provider
+      access_denied           = 13               " Access to file denied.
+      dp_out_of_memory        = 14               " Not enough memory in data provider
+      disk_full               = 15               " Storage medium is full.
+      dp_timeout              = 16               " Data provider timeout
+      not_supported_by_gui    = 17               " GUI does not support this
+      error_no_gui            = 18               " GUI not available
+      OTHERS                  = 19
+    ).
 
-*  cl_demo_output=>display( it_text ).
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+      WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
 
 ENDFORM.
 
