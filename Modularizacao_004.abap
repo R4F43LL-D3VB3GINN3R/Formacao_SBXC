@@ -47,7 +47,7 @@ AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_path. "insere o icone de procura
     IMPORTING
       file_name     = p_path.
 
-  "-----------------------------------------------------------------------------
+"-----------------------------------------------------------------------------
 
 START-OF-SELECTION.
 
@@ -68,12 +68,15 @@ END-OF-SELECTION.
 *&---------------------------------------------------------------------*
 FORM get_id .
 
-  zcl_rla_candidato=>get_user(
-    IMPORTING
-      id1 = v_id             " Convertido para INT4
-      id2 = v_id_str         " Convertido para String
-      id3 = v_id_char        " Convertido para Char10
-  ).
+  "metodo para determinar o proximo numero de candidato disponivel
+  v_id = zcl_rla_candidato=>get_next_user( ).
+
+  "metodo para exportar o id em tipos de dados diferentes
+  zcl_rla_candidato=>get_id_strchar(
+  IMPORTING
+    id_char   = v_id_char  " char10 com zeros à esquerda
+    id_string = v_id_str   " string comum
+).
 
 ENDFORM.
 *&---------------------------------------------------------------------*
@@ -88,6 +91,7 @@ FORM arquivo_upload .
 
   v_path = p_path. "casting char >> str
 
+  "metodo para realizar upload do ficheiro e inserir os dados numa tabela interna
   cl_gui_frontend_services=>gui_upload(
     EXPORTING
       filename               = v_path            " Name of file
@@ -132,26 +136,37 @@ ENDFORM.
 *& <--  p2        text
 *&---------------------------------------------------------------------*
 FORM enviar_dataset .
+  
+  "REALIZAR ESTA CONVERSAO NO METODO!!!!!!!!!!!
 
   v_id_str = v_id_char. "casting char >> str
   v_dir_temp = '.'.  "caminho dataset
+  
+  "----------------------------------------------
+*
+*  CONCATENATE v_dir_temp '\' v_id_str '.txt' INTO v_dir_dataset. "caminho concatenado
+*  CONDENSE v_dir_dataset.
+*
+*  v_dataset_final = v_dir_dataset. "casting str >> char
+*
+*  "gravacao do ficneiro no servidor.
+*  OPEN DATASET v_dataset_final FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
+*  IF sy-subrc EQ 0.
+*    LOOP AT it_text INTO DATA(wa_text).
+*      TRANSFER wa_text TO v_dataset_final.
+*    ENDLOOP.
+*    CLOSE DATASET v_dataset_final.
+*    MESSAGE 'Arquivo gravado com sucesso' TYPE 'S'.
+*  ELSE.
+*    MESSAGE 'Erro ao gravar o ficheiro no servidor.' TYPE 'E'.
+*  ENDIF.
 
-  CONCATENATE v_dir_temp '\' v_id_str '.txt' INTO v_dir_dataset. "caminho concatenado
-  CONDENSE v_dir_dataset.
-
-  v_dataset_final = v_dir_dataset. "casting str >> char
-
-  "gravacao do ficneiro no servidor.
-  OPEN DATASET v_dataset_final FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
-  IF sy-subrc EQ 0.
-    LOOP AT it_text INTO DATA(wa_text).
-      TRANSFER wa_text TO v_dataset_final.
-    ENDLOOP.
-    CLOSE DATASET v_dataset_final.
-    MESSAGE 'Arquivo gravado com sucesso' TYPE 'S'.
-  ELSE.
-    MESSAGE 'Erro ao gravar o ficheiro no servidor.' TYPE 'E'.
-  ENDIF.
+zcl_rla_candidato=>insert_file_dataset(
+  EXPORTING
+    it_stringtable = it_text
+    path_dataset   = v_dir_temp
+    id_string      = v_id_str
+).
 
 ENDFORM.
 *&---------------------------------------------------------------------*
@@ -164,17 +179,17 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM cadastrar_candidato .
 
-  IF p_nome IS NOT INITIAL.
-
-    wa_candidatos-id_candidato = v_id_char.
-    wa_candidatos-nome         = p_nome.
-    wa_candidatos-estado       = '0'.
-    wa_candidatos-data         = sy-datum.
-    wa_candidatos-hora         = sy-uzeit.
-
-    APPEND wa_candidatos TO it_candidatos.
-    MODIFY znn_candidatos FROM TABLE it_candidatos.
-
-  ENDIF.
+*  IF p_nome IS NOT INITIAL.
+*
+*    wa_candidatos-id_candidato = v_id_char.
+*    wa_candidatos-nome         = p_nome.
+*    wa_candidatos-estado       = '0'.
+*    wa_candidatos-data         = sy-datum.
+*    wa_candidatos-hora         = sy-uzeit.
+*
+*    APPEND wa_candidatos TO it_candidatos.
+*    MODIFY znn_candidatos FROM TABLE it_candidatos.
+*
+*  ENDIF.
 
 ENDFORM.
