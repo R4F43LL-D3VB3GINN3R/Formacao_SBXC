@@ -11,7 +11,7 @@ CLASS zcl_rla_candidato DEFINITION
         VALUE(id1) TYPE znn_candidatos-id_candidato .
     CLASS-METHODS insert_file_dataset
       IMPORTING
-        !it_stringtable TYPE table
+        !it_stringtable TYPE string_table
         !path_dataset   TYPE string
         !id_string      TYPE string .
     CLASS-METHODS get_id_strchar
@@ -29,7 +29,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_rla_candidato IMPLEMENTATION.
+CLASS ZCL_RLA_CANDIDATO IMPLEMENTATION.
 
 
 * <SIGNATURE>---------------------------------------------------------------------------------------+
@@ -88,7 +88,7 @@ CLASS zcl_rla_candidato IMPLEMENTATION.
 * <SIGNATURE>---------------------------------------------------------------------------------------+
 * | Static Public Method ZCL_RLA_CANDIDATO=>INSERT_FILE_DATASET
 * +-------------------------------------------------------------------------------------------------+
-* | [--->] IT_STRINGTABLE                 TYPE        TABLE
+* | [--->] IT_STRINGTABLE                 TYPE        STRING_TABLE
 * | [--->] PATH_DATASET                   TYPE        STRING
 * | [--->] ID_STRING                      TYPE        STRING
 * +--------------------------------------------------------------------------------------</SIGNATURE>
