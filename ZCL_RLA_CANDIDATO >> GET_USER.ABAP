@@ -1,6 +1,6 @@
-ID1	TYPE ZNN_CANDIDATOS-ID_CANDIDATO	Convertido para INT4
-ID2	TYPE STRING	Convertido para String
-ID3	TYPE CHAR10	Convertido para Char10
+"ID1	TYPE ZNN_CANDIDATOS-ID_CANDIDATO	Convertido para INT4
+"ID2	TYPE STRING	Convertido para String
+"ID3	TYPE CHAR10	Convertido para Char10
 
   METHOD get_user.
 
