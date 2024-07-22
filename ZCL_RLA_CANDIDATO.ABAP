@@ -5,21 +5,19 @@ CLASS zcl_rla_candidato DEFINITION
 
   PUBLIC SECTION.
 
+    CLASS-METHODS class_constructor .
     CLASS-METHODS get_next_user
       RETURNING
         VALUE(id1) TYPE znn_candidatos-id_candidato .
-
     CLASS-METHODS insert_file_dataset
       IMPORTING
         !it_stringtable TYPE table
         !path_dataset   TYPE string
         !id_string      TYPE string .
-
     CLASS-METHODS get_id_strchar
       EXPORTING
         !id_char   TYPE char10
         !id_string TYPE string .
-
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -32,6 +30,14 @@ ENDCLASS.
 
 
 CLASS zcl_rla_candidato IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method ZCL_RLA_CANDIDATO=>CLASS_CONSTRUCTOR
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD class_constructor.
+  ENDMETHOD.
 
 
 * <SIGNATURE>---------------------------------------------------------------------------------------+
@@ -98,10 +104,10 @@ CLASS zcl_rla_candidato IMPLEMENTATION.
 
     CONCATENATE path_dataset '\' id_str '.txt' INTO v_dir_dataset. "caminho concatenado
     CONDENSE v_dir_dataset.
-    
-    data: v_dataset_final(30) type c.
+
+    DATA: v_dataset_final(30) TYPE c.
     v_dataset_final = v_dir_dataset. "casting str >> char
-    
+
     "gravacao do ficneiro no servidor.
     OPEN DATASET v_dataset_final FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
     IF sy-subrc EQ 0.
