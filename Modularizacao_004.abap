@@ -3,35 +3,42 @@
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
+
 REPORT z_rla_candidatos.
+
+*&---------------------------------------------------------------------*
+"Variáveis - Estruturas - Tabelas
 
 TABLES: znn_candidatos.
 
-DATA: lt_text        TYPE TABLE OF string,
-      lt_candidato   type table of znn_candidatos,
-      lv_path        TYPE string,
-      lv_num         TYPE string,
-      lv_filename    TYPE string,
-      lv_cand_id     TYPE znn_candidatos-id_candidato,
-      lv_nome        TYPE znn_candidatos-nome,
-      lv_estado      TYPE znn_candidatos-estado,
-      lv_date        TYPE sy-datum,
-      lv_time        TYPE sy-uzeit,
-      lv_datetime    TYPE string,
-      lv_dir         TYPE string.
+DATA: it_text       TYPE STANDARD TABLE OF string,
+      it_candidatos TYPE TABLE OF znn_candidatos,
+      wa_candidatos TYPE znn_candidatos.
 
-" Tela de seleção
+DATA: v_id      TYPE znn_candidatos-id_candidato, "id numerico
+      v_id_char TYPE char10,                      "id para conversao em 00000000
+      v_id_str  TYPE string.                      "id para concatenacao
+
+DATA: v_path TYPE string.
+
+DATA: v_dir_temp          TYPE string, "caminho dataset
+      v_dir_dataset       TYPE string, "caminho dataset concatenado
+      v_dataset_final(30) TYPE c.      "caminho final.
+
+"---------------
+"Menu de Seleção
+"---------------
+SELECTION-SCREEN: SKIP 1.
+SELECTION-SCREEN: BEGIN OF BLOCK a1 WITH FRAME TITLE TEXT-001.
 PARAMETERS: p_path TYPE ibipparms-path,
             p_nome TYPE znn_candidatos-nome.
+SELECTION-SCREEN: END OF BLOCK a1.
+SELECTION-SCREEN: SKIP 1.
 
-START-OF-SELECTION.
-  PERFORM get_user.
-  PERFORM upload_file.
-  PERFORM submeter_candidato.
-END-OF-SELECTION.
+"-----------------------------------------------------------------------------
 
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_path.
-  " Chama a função para abrir a caixa de seleção de arquivo
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_path. "insere o icone de procura
+  " chama a funcao para abrir a caixa de selecao do arquivo.
   CALL FUNCTION 'F4_FILENAME'
     EXPORTING
       program_name  = syst-cprog
@@ -40,43 +47,72 @@ AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_path.
     IMPORTING
       file_name     = p_path.
 
+  "-----------------------------------------------------------------------------
+
+START-OF-SELECTION.
+
+  PERFORM get_id.              "determinar o proximo numero de candidato disponivel
+  PERFORM arquivo_upload.      "faz o upload do arquivo txt
+  PERFORM enviar_dataset.      "envia arquivo txt para o servidor
+  PERFORM cadastrar_candidato. "insere o candidato na tabela z
+
+END-OF-SELECTION.
+
 *&---------------------------------------------------------------------*
-*& Form get_user
+*& Form GET_ID
 *&---------------------------------------------------------------------*
-FORM get_user .
-  " 1. Determinar o próximo número de candidato disponível
-  SELECT MAX( id_candidato ) INTO lv_cand_id FROM znn_candidatos.
-  IF sy-subrc = 0 AND lv_cand_id IS INITIAL.
-    lv_cand_id = 0.
-  ELSEIF sy-subrc = 0.
-    lv_cand_id = lv_cand_id + 1.
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_id .
+
+  "consulta para determinar o proximo numero de candidato disponivel.
+  SELECT MAX( id_candidato ) FROM znn_candidatos INTO v_id.
+
+  "verificacao da consulta
+  IF sy-subrc EQ 0.
+    ADD 1 TO v_id.
   ELSE.
-    MESSAGE 'Erro ao buscar o próximo número de candidato' TYPE 'E'.
+    MESSAGE 'Erro ao buscar o número do candidato' TYPE 'E'.
   ENDIF.
-  lv_num = lv_cand_id.
+
+  v_id_char = v_id. "casting int >> char10
+
+  " Formatar número com zeros à esquerda
+  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+    EXPORTING
+      input  = v_id_char
+    IMPORTING
+      output = v_id_char.
+
 ENDFORM.
-
 *&---------------------------------------------------------------------*
-*& Form upload_file
+*& Form ARQUIVO_UPLOAD
 *&---------------------------------------------------------------------*
-FORM upload_file .
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM arquivo_upload .
 
-  DATA: lv_path TYPE string.
-  lv_path = p_path.
+  v_path = p_path. "casting char >> str
 
-  " 2. Fazer upload do ficheiro em formato TXT para uma tabela interna
+  "funcao para upload de ficheiro
   IF p_path IS NOT INITIAL.
     CALL FUNCTION 'GUI_UPLOAD'
       EXPORTING
-        filename            = lv_path
-        filetype            = 'ASC'
+        filename                = v_path
+        filetype                = 'ASC'
       TABLES
-        data_tab            = lt_text
+        data_tab                = it_text
       EXCEPTIONS
-        file_read_error     = 1
-        no_batch            = 2
+        file_read_error         = 1
+        no_batch                = 2
         gui_refuse_filetransfer = 3
-        OTHERS              = 4.
+        OTHERS                  = 4.
     IF sy-subrc <> 0.
       MESSAGE 'Erro ao carregar o ficheiro' TYPE 'E'.
     ENDIF.
@@ -84,54 +120,62 @@ FORM upload_file .
     MESSAGE 'Nenhum caminho especificado' TYPE 'E'.
   ENDIF.
 
-  DATA: lv_temp_dir TYPE string.
-  lv_temp_dir = '.'.
-
-  CONCATENATE lv_temp_dir '\' p_nome lv_num '.txt' INTO lv_filename.
-  CONDENSE lv_filename.
-
-  DATA: finalpath(30) TYPE c.
-  finalpath = lv_filename.
-
-  " 5. Tentar criar o arquivo no caminho definido
-  OPEN DATASET finalpath FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
-  IF sy-subrc EQ 0.
-    LOOP AT lt_text INTO DATA(ls_text).
-      TRANSFER ls_text TO finalpath.
-    ENDLOOP.
-    CLOSE DATASET finalpath.
-    MESSAGE 'Arquivo gravado com sucesso' TYPE 'S'.
-  ELSE.
-    WRITE: lv_filename.
-    MESSAGE 'Erro ao gravar o ficheiro no servidor' TYPE 'E'.
-  ENDIF.
+*  cl_demo_output=>display( it_text ).
 
 ENDFORM.
 
 *&---------------------------------------------------------------------*
-*& Form submeter_candidato
+*& Form ENVIAR_DATASET
 *&---------------------------------------------------------------------*
-FORM submeter_candidato .
-  DATA: ls_candidato TYPE znn_candidatos.
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM enviar_dataset .
 
-  " Formatar número com zeros à esquerda, se necessário
-  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
-    EXPORTING
-      input  = lv_num
-    IMPORTING
-      output = lv_num.
+  v_id_str = v_id_char. "casting char >> str
+  v_dir_temp = '.'.  "caminho dataset
 
-  ls_candidato-id_candidato = lv_num.
-  ls_candidato-nome         = p_nome.
-  ls_candidato-estado       = '0'. " Status '0' para Submetido
-  ls_candidato-data         = sy-datum.
-  ls_candidato-hora         = sy-uzeit.
+  CONCATENATE v_dir_temp '\' v_id_str '.txt' INTO v_dir_dataset. "caminho concatenado
+  CONDENSE v_dir_dataset.
 
-  INSERT znn_candidatos FROM ls_candidato.
-  IF sy-subrc = 0.
-    append ls_candidato to lt_candidato.
-    modify znn_candidatos from table lt_candidato.
+  v_dataset_final = v_dir_dataset. "casting str >> char
+
+  "gravacao do ficneiro no servidor.
+  OPEN DATASET v_dataset_final FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
+  IF sy-subrc EQ 0.
+    LOOP AT it_text INTO DATA(wa_text).
+      TRANSFER wa_text TO v_dataset_final.
+    ENDLOOP.
+    CLOSE DATASET v_dataset_final.
+    MESSAGE 'Arquivo gravado com sucesso' TYPE 'S'.
   ELSE.
-    MESSAGE 'Erro ao inserir registro na tabela de candidatos' TYPE 'E'.
+    MESSAGE 'Erro ao gravar o ficheiro no servidor.' TYPE 'E'.
   ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form CADASTRAR_CANDIDATO
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM cadastrar_candidato .
+
+  IF p_nome IS NOT INITIAL.
+
+    wa_candidatos-id_candidato = v_id_char.
+    wa_candidatos-nome         = p_nome.
+    wa_candidatos-estado       = '0'.
+    wa_candidatos-data         = sy-datum.
+    wa_candidatos-hora         = sy-uzeit.
+
+    APPEND wa_candidatos TO it_candidatos.
+    MODIFY znn_candidatos FROM TABLE it_candidatos.
+
+  ENDIF.
+
 ENDFORM.
