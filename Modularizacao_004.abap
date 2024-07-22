@@ -68,24 +68,12 @@ END-OF-SELECTION.
 *&---------------------------------------------------------------------*
 FORM get_id .
 
-  "consulta para determinar o proximo numero de candidato disponivel.
-  SELECT MAX( id_candidato ) FROM znn_candidatos INTO v_id.
-
-  "verificacao da consulta
-  IF sy-subrc EQ 0.
-    ADD 1 TO v_id.
-  ELSE.
-    MESSAGE 'Erro ao buscar o número do candidato' TYPE 'E'.
-  ENDIF.
-
-  v_id_char = v_id. "casting int >> char10
-
-  " Formatar número com zeros à esquerda
-  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
-    EXPORTING
-      input  = v_id_char
+  zcl_rla_candidato=>get_user(
     IMPORTING
-      output = v_id_char.
+      id1 = v_id             " Convertido para INT4
+      id2 = v_id_str         " Convertido para String
+      id3 = v_id_char        " Convertido para Char10
+  ).
 
 ENDFORM.
 *&---------------------------------------------------------------------*
