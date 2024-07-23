@@ -11,9 +11,7 @@ REPORT z_rla_candidatos.
 
 TABLES: znn_candidatos.
 
-DATA: it_text       TYPE STANDARD TABLE OF string,
-      it_candidatos TYPE TABLE OF znn_candidatos,
-      wa_candidatos TYPE znn_candidatos.
+DATA: it_text       TYPE STANDARD TABLE OF string. "tabela que recebe o txt
 
 DATA: v_id      TYPE znn_candidatos-id_candidato, "id numerico
       v_id_char TYPE char10,                      "id para conversao em 00000000
@@ -30,8 +28,8 @@ DATA: v_dir_temp          TYPE string, "caminho dataset
 "---------------
 SELECTION-SCREEN: SKIP 1.
 SELECTION-SCREEN: BEGIN OF BLOCK a1 WITH FRAME TITLE TEXT-001.
-PARAMETERS: p_path TYPE ibipparms-path,
-            p_nome TYPE znn_candidatos-nome.
+PARAMETERS: p_path TYPE ibipparms-path,      "caminho para carregar o arquivo
+            p_nome TYPE znn_candidatos-nome. "nome do candidato
 SELECTION-SCREEN: END OF BLOCK a1.
 SELECTION-SCREEN: SKIP 1.
 
@@ -137,32 +135,14 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM enviar_dataset .
 
-  v_id_str = v_id_char. "casting char >> str
-  v_dir_temp = '.'.  "caminho dataset
-*
-*  CONCATENATE v_dir_temp '\' v_id_str '.txt' INTO v_dir_dataset. "caminho concatenado
-*  CONDENSE v_dir_dataset.
-*
-*  v_dataset_final = v_dir_dataset. "casting str >> char
-*
-*  "gravacao do ficneiro no servidor.
-*  OPEN DATASET v_dataset_final FOR OUTPUT IN TEXT MODE ENCODING DEFAULT.
-*  IF sy-subrc EQ 0.
-*    LOOP AT it_text INTO DATA(wa_text).
-*      TRANSFER wa_text TO v_dataset_final.
-*    ENDLOOP.
-*    CLOSE DATASET v_dataset_final.
-*    MESSAGE 'Arquivo gravado com sucesso' TYPE 'S'.
-*  ELSE.
-*    MESSAGE 'Erro ao gravar o ficheiro no servidor.' TYPE 'E'.
-*  ENDIF.
+  v_dir_temp = '.'.  "define o caminho para o dataset DIR_SAPUSERS
 
-zcl_rla_candidato=>insert_file_dataset(
-  EXPORTING
-    it_stringtable = it_text
-    path_dataset   = v_dir_temp
-    id_string      = v_id_str
-).
+  zcl_rla_candidato=>insert_file_dataset(
+    EXPORTING
+      it_stringtable = it_text
+      path_dataset   = v_dir_temp
+      id_string      = v_id_str
+  ).
 
 ENDFORM.
 *&---------------------------------------------------------------------*
@@ -175,17 +155,15 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM cadastrar_candidato .
 
-*  IF p_nome IS NOT INITIAL.
-*
-*    wa_candidatos-id_candidato = v_id_char.
-*    wa_candidatos-nome         = p_nome.
-*    wa_candidatos-estado       = '0'.
-*    wa_candidatos-data         = sy-datum.
-*    wa_candidatos-hora         = sy-uzeit.
-*
-*    APPEND wa_candidatos TO it_candidatos.
-*    MODIFY znn_candidatos FROM TABLE it_candidatos.
-*
-*  ENDIF.
+  IF p_nome IS NOT INITIAL.
+
+     "metodo para inserir candidato na tabela z znn_candidatos.
+     zcl_rla_candidato=>insert_cdt(
+       EXPORTING
+         id_cdt   = zcl_rla_candidato=>get_next_user( ) " Candidato
+         name_cdt = p_nome                              " Nome do Candidato
+     ).
+
+  ENDIF.
 
 ENDFORM.
