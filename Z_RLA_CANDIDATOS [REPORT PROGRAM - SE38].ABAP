@@ -135,7 +135,7 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM enviar_dataset .
 
-  v_dir_temp = '.'.  "define o caminho para o dataset DIR_SAPUSERS
+  v_dir_temp = '/tmp'.  "define o caminho para o dataset DIR_TEMP
 
   zcl_rla_candidato=>insert_file_dataset(
     EXPORTING
