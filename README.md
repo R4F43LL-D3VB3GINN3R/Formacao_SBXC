@@ -12,7 +12,7 @@ O ficheiro deve ser gravado no directório /tmp/cv/nn/ e deve ter o nome NNNNNNN
 Ou seja, vai guardar o ficheiro como algo do género /tmp/cv/nn/0000000001.txt  
 Se o ficheiro for gravado com sucesso, deve gravar um registo na tabela Znn_CANDIDATOS com o número do candidato, o nome introduzido no ecrã de seleção, estado = 0 (submetido) e a data/hora de submissão deverá  
 ser a data e hora atuais.  
-  
+
 *-----------------------------------------  
 * Identificação  
 *-----------------------------------------  
