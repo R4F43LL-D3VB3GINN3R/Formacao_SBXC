@@ -77,13 +77,13 @@ CLASS ZCL_RLA_CANDIDATO IMPLEMENTATION.
           IMPORTING
             output = id_char.
       CATCH cx_static_check INTO DATA(ex).
-        " tratamento de erro estático
+        " Tratamento de erro estático
         MESSAGE ex TYPE 'E'.
       CATCH cx_sy_open_sql_db INTO DATA(ex2).
-        " tratamento de erro de banco de dados
+        " Tratamento de erro de banco de dados
         MESSAGE ex2 TYPE 'E'.
       CATCH cx_root INTO DATA(ex3).
-        " tratamento de erro genérico
+        " Tratamento de erro genérico
         MESSAGE ex3 TYPE 'E'.
     ENDTRY.
 
@@ -177,7 +177,7 @@ CLASS ZCL_RLA_CANDIDATO IMPLEMENTATION.
 
     DATA: v_dir_dataset TYPE string. "cria a string para receber todo o texto concatenado
     "concatena o caminho, o id  e a extensao do arquivo dentro da string
-    CONCATENATE path_dataset '\' id_str '.txt' INTO v_dir_dataset.
+    CONCATENATE path_dataset '/' id_str '.txt' INTO v_dir_dataset.
     CONDENSE v_dir_dataset.
 
     "converte toda string concatenada em tipo char
