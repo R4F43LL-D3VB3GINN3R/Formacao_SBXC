@@ -1,54 +1,54 @@
-class ZCL_RLA_CANDIDATO definition
-  public
-  final
-  create public .
+CLASS zcl_rla_candidato DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  data ID_CANDIDATO type ZCANDIDATO .
-  data ID_EMPLOYEE type ZEMPLOYEE .
+    DATA id_candidato TYPE zcandidato .
+    DATA id_employee TYPE zemployee .
 
     "metodo para definir o proximo id do candidato disponivel
-  class-methods GET_NEXT_USER
-    returning
-      value(ID1) type ZNN_CANDIDATOS-ID_CANDIDATO .       "retorna o id do candidato da tabela znn_candidatos
+    CLASS-METHODS get_next_user
+      RETURNING
+        VALUE(id1) TYPE znn_candidatos-id_candidato .       "retorna o id do candidato da tabela znn_candidatos
     "metodo para inserir o ficheiro txt no dataset
-  class-methods INSERT_FILE_DATASET
-    importing
-      !IT_STRINGTABLE type STRING_TABLE       "tabela preenchida com o texto em formato string
-      !PATH_DATASET type STRING                   "caminho para o arquivo no servidor
-      !ID_STRING type STRING .                          "id do candidato em formato string
+    CLASS-METHODS insert_file_dataset
+      IMPORTING
+        !it_stringtable TYPE string_table       "tabela preenchida com o texto em formato string
+        !path_dataset   TYPE string                   "caminho para o arquivo no servidor
+        !id_string      TYPE string .                          "id do candidato em formato string
     "metodo que retorna o id do candidato em tipo string ou char10
-  class-methods GET_ID_STRCHAR
-    exporting
-      !ID_CHAR type CHAR10               "id do candidato em char10 com zeros à esquerda
-      !ID_STRING type STRING .       "id do candidato em string
+    CLASS-METHODS get_id_strchar
+      EXPORTING
+        !id_char   TYPE char10               "id do candidato em char10 com zeros à esquerda
+        !id_string TYPE string .       "id do candidato em string
     "metodo para inserir candidato na tabela z znn_candidatos
-  class-methods INSERT_CDT
-    importing
-      !ID_CDT type ZNN_CANDIDATOS-ID_CANDIDATO default 0         "id do candidato
-      !NAME_CDT type ZNN_CANDIDATOS-NOME optional .            "nome do candidato
+    CLASS-METHODS insert_cdt
+      IMPORTING
+        !id_cdt   TYPE znn_candidatos-id_candidato DEFAULT 0         "id do candidato
+        !name_cdt TYPE znn_candidatos-nome OPTIONAL .            "nome do candidato
     "constructor que gera informacoes de um candidato
-  methods CONSTRUCTOR
-    importing
-      !I_ID_CANDIDATO type ZCANDIDATO optional "recebe um id de um candidato valido como parametro
-    exceptions
-      INVALID_CAND .
+    METHODS constructor
+      IMPORTING
+        !i_id_candidato TYPE zcandidato OPTIONAL "recebe um id de um candidato valido como parametro
+      EXCEPTIONS
+        invalid_cand .
     "metodo para aprovar um candidato existente na tabela
-  methods APROVAR
-    exporting
-      !E_RESULT type ZNN_RESULT .
+    METHODS aprovar
+      EXPORTING
+        !e_result TYPE znn_result .
     "metodo para rejeitar um candidato existente na tabela
-  methods REJEITAR
-    exporting
-      !E_RESULT type ZNN_RESULT .
+    METHODS rejeitar
+      EXPORTING
+        !e_result TYPE znn_result .
     "metodo para ler um curriculo referente a um candidato inserido no servidor
-  class-methods READ_FILE_DATASET
-    importing
-      !PATH_DATASET type STRING "caminho para diretorio no servidor
-      !ID_STRING type STRING "id do candidato em formato string
-    changing
-      !IT_STRINGTABLE2 type STRING_TABLE . "tabela interna string
+    CLASS-METHODS read_file_dataset
+      IMPORTING
+        !path_dataset    TYPE string "caminho para diretorio no servidor
+        !id_string       TYPE string "id do candidato em formato string
+      CHANGING
+        !it_stringtable2 TYPE string_table . "tabela interna string
   PROTECTED SECTION.
 
     "constantes que recebem valor de estados diferente para cada funcionario
@@ -72,7 +72,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_RLA_CANDIDATO IMPLEMENTATION.
+CLASS zcl_rla_candidato IMPLEMENTATION.
 
 
 * <SIGNATURE>---------------------------------------------------------------------------------------+
