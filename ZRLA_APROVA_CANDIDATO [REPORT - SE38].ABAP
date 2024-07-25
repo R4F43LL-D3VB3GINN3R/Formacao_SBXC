@@ -286,54 +286,48 @@ FORM aceitar_candidatura .
   fim = nameuser2+fimstringnum(1).
 
   "variaveis string para prefixo, sufixo e nome de user completo
-  DATA: userprefix TYPE string,
-        usersufix  TYPE string,
-        username   TYPE string.
+  DATA: userprefix  TYPE string,
+        userprefix2 TYPE string,
+        usersufix   TYPE string,
+        username    TYPE string.
 
   "o prefixo recebe as três letras + o S4H que é comum entre todos os users.
   CONCATENATE ini mid fim 'S4H' INTO userprefix.
 
-  "variaveis para receber numeros aleatorios para os sufixos.
-  DATA :
-    num1 TYPE i,
-    num2 TYPE i,
-    num3 TYPE i.
+  "realiza consulta para buscar o id do colaborador aprovado
+  SELECT SINGLE b~id_employee
+  INTO usersufix
+  FROM znn_candidatos AS a
+  INNER JOIN ysap_employee AS b
+  ON a~id_employee = b~id_employee
+  WHERE a~id_candidato = p_id.
 
-  "instancia da classe random do abap
-  DATA(lo_rand) = cl_abap_random=>create( ).
-
-  "cada variavel recebe seu numero aleatorio de 1 a 9
-  num1 = lo_rand->intinrange( low = 1 high = 9 ).
-  num2 = lo_rand->intinrange( low = 1 high = 9 ).
-  num3 = lo_rand->intinrange( low = 1 high = 9 ).
-
-  "variaveis string para receber os numeros aleatorios
-  DATA: primnum TYPE string,
-        midnum  TYPE string,
-        ultnum  TYPE string.
-
-  "cast int >> string
-  primnum = num1.
-  midnum = num2.
-  ultnum = num3.
-
-  "concatena ao sufixo os 3 numeros aleatorios convertidos para string
-  CONCATENATE primnum midnum ultnum INTO usersufix.
-
-  "remove os espaços em branco no sufixo
-  CONDENSE usersufix NO-GAPS.
+  "chamada da funcao para remover acentos da string de prefixo
+  CALL FUNCTION 'HR_BR_CONVERT_ACCENTS'
+    EXPORTING
+      in_text             = userprefix
+    IMPORTING
+      out_text            = userprefix2
+    EXCEPTIONS
+      cannot_convert      = 1
+      langu_not_supported = 2
+      OTHERS              = 3.
+  IF sy-subrc <> 0.
+    MESSAGE 'Erro na remoção de acentos da string' TYPE 'E'.
+  ENDIF.
 
   "concatena prefixo e sufixo na variavel username, concluindo o nome novo do user
-  CONCATENATE userprefix usersufix INTO username.
+  CONCATENATE userprefix2 usersufix INTO username.
+  CONDENSE username NO-GAPS.
 
   "tabela interna e estrutura para a tabela z znn_username
   DATA: it_username TYPE TABLE OF znn_username,
         wa_username TYPE znn_username.
 
-  "recebe o id do user disponivel no sistema
+  "consulta que recebe o id do user disponivel no sistema
   DATA: userid TYPE znn_username-id_user.
   SELECT MAX( id_user ) FROM znn_username INTO userid.
-  add 1 to userid.
+  ADD 1 TO userid.
 
   "preenche a estrutura com as informacoes do novo user
   wa_username-id_user = userid.
