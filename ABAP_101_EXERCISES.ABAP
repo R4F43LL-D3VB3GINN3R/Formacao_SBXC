@@ -1595,12 +1595,39 @@ report zabap_exercises.
 *71--------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
-*Write an executable program with two parameters types as integers. 
-*The first represents a number to be printed and the second represents the length of the number to be printed. 
+*Write an executable program with two parameters types as integers.
+*The first represents a number to be printed and the second represents the length of the number to be printed.
 *Place zeros to the left if necessary. Example:
 * • p_number = 15 p_length = 2. Output = 15
 * • p_number = 15 p_length = 6. Output = 000015
 * • p_number = 2014 p_length = 2. Output = 20
 * • p_number = 123456789 p_length = 10. Output = 0123456789
 * • p_number = 123456789 p_length = 4. Output = 1234
-
+*
+*data: lv_length type i,      "contador para acrescentar zeros
+*      lv_string type string, "recebe o numero enviado pelo parameters
+*      lv_output type string. "string final de saída
+*
+*parameters: p_num    type i,
+*            p_numlen type i.
+*
+*start-of-selection.
+*
+*  lv_string = p_num.
+*  lv_length = strlen( lv_string ).
+*
+*  concatenate lv_string lv_output into lv_output. "saída recebe o numero do parametro.
+*
+*  while lv_length le p_numlen.
+*    concatenate '0' lv_output into lv_output.
+*    add 1 to lv_length.
+*  endwhile.
+*
+*  write: lv_output.
+*
+*72--------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Write an executable program with two parameters which represents a base and exponent. 
+*Print the result of exponentiation. As both parameters are required for the operation they should be mandatory.
+*
