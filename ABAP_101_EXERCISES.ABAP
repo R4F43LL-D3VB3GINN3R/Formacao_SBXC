@@ -1,9 +1,9 @@
 *&---------------------------------------------------------------------*
-*& Report ZABAP_EXERCISES
+*& Report ZABAP_EXERCISES2
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-report zabap_exercises.
+report zabap_exercises2.
 
 *001--------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -1628,6 +1628,98 @@ report zabap_exercises.
 *72--------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
-*Write an executable program with two parameters which represents a base and exponent. 
+*Write an executable program with two parameters which represents a base and exponent.
 *Print the result of exponentiation. As both parameters are required for the operation they should be mandatory.
+*
+*data: lv_count type i,
+*      lv_total type i.
+*
+*parameters: p_base type i OBLIGATORY,
+*            p_exp  type i OBLIGATORY.
+*
+*START-OF-SELECTION.
+*
+*  lv_count = 1.
+*
+*  while lv_count lt p_exp.
+*    if lv_count eq 1.
+*      lv_total = lv_total + ( p_base * p_base ).
+*    else.
+*      lv_total = lv_total * p_base.
+*    endif.
+*    add 1 to lv_count.
+*  endwhile.
+*
+*  write: lv_total.
+*
+*73--------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Write an executable program with two parameters (a string and a number) The number should be accepted only if it's less or equal to 25.
+"The program should print the string as many times as the value of the numeric parameter.
+"The output should be as following String = "ABAPers are not crazy people." Number = 21.
+"Line [1]: A
+"Line [2]: AB
+"Line [3]: ABA
+"Line [4]: ABAP
+"Line [5]: ABAPe
+"(...)
+"Line [21]: ABAPers are not crazy
+*"
+*
+*data: lv_count type i value 0.
+*
+*parameters: p_num    type i,
+*            p_string type string.
+*
+*if p_num le 25.
+*  do p_num times.
+*    add 1 to lv_count.
+*    write: / 'Line: ', lv_count , p_string.
+*  enddo.
+*else.
+*  message 'Text is too long: ' type 'E' display like 'I'.
+*endif.
+*
+*74---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+**Write an executable program which has two internal tables, with a header line and the other
+**without. Add five records in each table. In the case of the one with header line, use it embed work  area. For the other one, use a work area declared explicitly.
+**Print the contents of both internal tables.
+*
+*data: it_data type table of string,
+*      it_data2 type table of string with header line.
+*
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*append 'Rafael' to it_data.
+*append 'Rafael' to it_data2.
+*
+*loop at it_data2.
+*  write: / it_data2.
+*endloop.
+*
+*loop at it_data into data(ls_data).
+*  write: / ls_data.
+*endloop.
+*
+*75---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Have a routine that receives an internal table (with at least three columns) and the sort it by its first column.
 *
