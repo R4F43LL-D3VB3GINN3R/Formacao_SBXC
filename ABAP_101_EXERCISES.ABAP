@@ -1723,3 +1723,54 @@ report zabap_exercises2.
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *Have a routine that receives an internal table (with at least three columns) and the sort it by its first column.
 *
+*types: begin of wa_struct,
+*         name   type string,
+*         age    type i,
+*         weight type p decimals 2,
+*       end of wa_struct.
+*
+*data: 
+*      it_data2 type table of wa_struct,
+*      ls_data  type wa_struct.
+*
+*start-of-selection.
+*
+*  perform sort_table tables it_data2 using ls_data.
+*
+*form sort_table tables it_table using new_struct type wa_struct.
+*
+*  new_struct-name   = 'Rafael'.
+*  new_struct-age    = 37.
+*  new_struct-weight = '88.50'.
+*  append new_struct to it_table.
+*
+*  new_struct-name   = 'Bruno'.
+*  new_struct-age    = 23.
+*  new_struct-weight = '90.50'.
+*  append new_struct to it_table.
+*
+*  new_struct-name   = 'Serafim'.
+*  new_struct-age    = 45.
+*  new_struct-weight = '70.50'.
+*  append new_struct to it_table.
+*
+*  new_struct-name   = 'Tiago'.
+*  new_struct-age    = 30.
+*  new_struct-weight = '90.50'.
+*  append new_struct to it_table.
+*
+*  new_struct-name   = 'Daniel'.
+*  new_struct-age    = 37.
+*  new_struct-weight = '65.50'.
+*  append new_struct to it_table.
+*  
+*  sort it_data2 by name ascending.
+*
+*endform.
+*
+*76---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Have a routine that receives an internal table (with at least three columns) and the sort it by its first column.
+*
+*Have a routine that receives an internal table (with at least three columns) and a string with the name of a column. Sort the table by the specified column accordingly.
