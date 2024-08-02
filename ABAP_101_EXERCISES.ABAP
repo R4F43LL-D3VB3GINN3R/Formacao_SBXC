@@ -1422,10 +1422,57 @@ report zabap_exercises2.
 *69--------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
-*Write an executable program which has a routine that receives a standard internal table. 
-*The line type used in the internal table declaration must contain at least three components any text type. 
-*The routine should replace all occurrences of "space" by a "_" (underscore) using field symbols (and not work areas). 
-*Print the table contents before and after calling the routine. 
-*The internal table must be populated with at least 10 records and contemplating 
+*Write an executable program which has a routine that receives a standard internal table.
+*The line type used in the internal table declaration must contain at least three components any text type.
+*The routine should replace all occurrences of "space" by a "_" (underscore) using field symbols (and not work areas).
+*Print the table contents before and after calling the routine.
+*The internal table must be populated with at least 10 records and contemplating
 "...some fields that have "space" in all field values, other records containing spaces in just a few fields and other records without spaces at all.
-
+*
+*types: begin of wa_struct,
+*         text1 type text35,
+*         text2 type char32,
+*         text3 type string,
+*       end of wa_struct.
+*
+*data: it_data  type table of wa_struct,
+*      it_data2 type table of wa_struct,
+*      ls_data  type wa_struct.
+*
+*field-symbols: <fs_data>  type wa_struct.
+*
+*start-of-selection.
+*  perform fill_data tables it_data it_data2 using ls_data.
+*  perform form tables it_data.
+*
+*  cl_demo_output=>display( it_data2 ).
+*  cl_demo_output=>display( it_data ).
+*
+*form fill_data tables it_table it_table2 using new_struct type wa_struct.
+*
+*  do 50 times.
+*    new_struct-text1 = 'Rafael Correia Lopes de Albuqueruqe'.
+*    new_struct-text2 = 'Rua da Boa Nova 118 - Massarelos'.
+*    new_struct-text3 = 'SBX Consulting'.
+*    append new_struct to it_table.
+*    append new_struct to it_table2.
+*    clear new_struct.
+*  enddo.
+*
+*endform.
+*form form tables it_table.
+*
+*  data: pattern type char2 value ' _'.
+*
+*  loop at it_table assigning <fs_data>.
+*    translate <fs_data>-text1 using pattern.
+*    translate <fs_data>-text2 using pattern.
+*    translate <fs_data>-text3 using pattern.
+*  endloop.
+*
+*endform.
+*
+*70--------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*
