@@ -1,9 +1,9 @@
 *&---------------------------------------------------------------------*
-*& Report ZABAP_EXERCISES2
+*& Report ZABAP_EXERCISES
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-report zabap_exercises2.
+report zabap_exercises.
 
 *001--------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -1475,4 +1475,132 @@ report zabap_exercises2.
 *70--------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
+*Write an executable program which has a routine that receives an internal table of strings and concatenates their values in four different ways:
+* 1. Way 1: concatenate internal table texts by the line order
+* 2. Way 2: concatenate internal table texts by the text ascending order
+* 3. Way 3: concatenate internal table texts by the text descending order
+* 4. Way 4: concatenate internal table texts by the line reverse order
 *
+*types: begin of wa_struct,
+*         line type string,
+*       end of wa_struct.
+*
+*data: it_data type table of wa_struct.
+*data: ls_data type wa_struct.
+*data: lv_string type string.
+*data: lv_string_asc type string.
+*data: lv_string_desc type string.
+*data: lv_reverse type string.
+*data: lv_string_rev type string.
+*
+*parameters: p_normal RADIOBUTTON GROUP rb1 default 'X',
+*            p_asc RADIOBUTTON GROUP rb1,
+*            p_desc RADIOBUTTON GROUP rb1,
+*            p_rev RADIOBUTTON GROUP rb1.
+*
+*ls_data-line = 'Rafael'.
+*append ls_data to it_data.
+*clear ls_data.
+*ls_data-line = 'Tiago' .
+*append ls_data to it_data.
+*ls_data-line = 'Daniel' .
+*append ls_data to it_data.
+*ls_data-line = 'Bruno' .
+*append ls_data to it_data.
+*ls_data-line = 'Serafim' .
+*append ls_data to it_data.
+*ls_data-line = 'Nuno' .
+*append ls_data to it_data.
+*ls_data-line = 'Diogo' .
+*append ls_data to it_data.
+*ls_data-line = 'Davi' .
+*append ls_data to it_data.
+*ls_data-line = 'Joana' .
+*append ls_data to it_data.
+*ls_data-line = 'Susana' .
+*append ls_data to it_data.
+*ls_data-line = 'João' .
+*append ls_data to it_data.
+*ls_data-line = 'André'.
+*append ls_data to it_data.
+*ls_data-line = 'Luís' .
+*append ls_data to it_data.
+*ls_data-line = 'Joaquina' .
+*append ls_data to it_data.
+*ls_data-line = 'Cláudio' .
+*append ls_data to it_data.
+*ls_data-line = 'Rui' .
+*append ls_data to it_data.
+*ls_data-line = 'Ricardo' .
+*append ls_data to it_data.
+*ls_data-line = 'Luis' .
+*append ls_data to it_data.
+*
+*start-of-selection.
+*
+*  if p_normal eq 'X'.
+*    perform concatenate            tables it_data using ls_data.
+*  elseif p_asc eq 'X'.
+*    perform concatenate_ascending  tables it_data using ls_data.
+*  elseif p_desc eq 'X'.
+*    perform concatenate_descending tables it_data using ls_data.
+*  elseif p_rev eq 'X'.
+*    perform concatenate_reverse    tables it_data using ls_data.
+*  endif.
+*
+*form concatenate tables it_table using new_struct type wa_struct.
+*
+*  loop at it_table into new_struct.
+*    concatenate lv_string new_struct-line into lv_string separated by space.
+*  endloop.
+*
+*  write: / lv_string.
+*
+*endform.
+*form concatenate_ascending tables it_table using new_struct type wa_struct..
+*
+*  sort it_table.
+*
+*  loop at it_table into new_struct.
+*    concatenate lv_string_asc new_struct-line into lv_string_asc separated by space.
+*  endloop.
+*
+*  write: / lv_string_asc.
+*
+*endform.
+*form concatenate_descending tables it_table using new_struct type wa_struct..
+*
+*  sort it_table descending.
+*
+*  loop at it_table into new_struct.
+*    concatenate lv_string_desc new_struct-line into lv_string_desc separated by space.
+*  endloop.
+*
+*  write: / lv_string_desc.
+*
+*endform.
+*form concatenate_reverse tables it_table using new_struct type wa_struct..
+*
+*  sort it_table ascending.
+*
+*  loop at it_table into new_struct.
+*    lv_reverse = reverse( new_struct-line ).
+*    concatenate lv_string_rev lv_reverse into lv_string_rev separated by space.
+*  endloop.
+*
+*    write: / lv_string_rev.
+*
+*endform.
+*
+*71--------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Write an executable program with two parameters types as integers. 
+*The first represents a number to be printed and the second represents the length of the number to be printed. 
+*Place zeros to the left if necessary. Example:
+* • p_number = 15 p_length = 2. Output = 15
+* • p_number = 15 p_length = 6. Output = 000015
+* • p_number = 2014 p_length = 2. Output = 20
+* • p_number = 123456789 p_length = 10. Output = 0123456789
+* • p_number = 123456789 p_length = 4. Output = 1234
+
