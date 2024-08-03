@@ -2012,3 +2012,49 @@ report zabap_exercises2.
 *
 *  endloop.
 *
+*80---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a select-options for numeric values without ranges.
+*Then, validate if the number zero is entered and if it is, show an error message.
+*
+*data: lv_range type i.
+*
+*select-options sv_num for lv_range no intervals.
+*
+*start-of-selection.
+*
+*at selection-screen on sv_num.
+*  loop at sv_num.
+*    if sv_num-low eq 0.
+*      write: 'The number must be greater than zero'.
+*    endif.
+*  endloop.
+*
+*81---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a select-options for numeric values without multiple ranges.
+*Then, validate if a range bigger than 100 is entered and if it is, show an error message.
+*
+*  data: lv_num type i.
+*  data: lv_difference type i.
+*
+*  select-options sv_num for lv_num no intervals.
+*
+*start-of-selection.
+*
+*  lv_difference = sv_num-high - sv_num-low + 1.
+*
+*at selection-screen on sv_num.
+*  loop at sv_num.
+*    if sv_num-high > lv_difference.
+*      write: 'The number must be less than 100'.
+*    endif.
+*  endloop.
+*
+*82---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a parameter as a listbox containing all Airline codes com table SCARR
+*
