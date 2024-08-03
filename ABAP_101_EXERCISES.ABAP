@@ -1775,20 +1775,20 @@ report zabap_exercises2.
 "Sort the table by the specified column accordingly.
 *
 *types: begin of wa_struct,
-*  name type string,
-*  age type i,
-*  weight type p decimals 2,
-*end of wa_struct.
+*         name   type string,
+*         age    type i,
+*         weight type p decimals 2,
+*       end of wa_struct.
 *
 *data: it_data type table of wa_struct with key name,
 *      ls_data type wa_struct.
 *
-*START-OF-SELECTION.
+*start-of-selection.
 *
-*perform fill_table tables it_data using ls_data.
-*perform sort_data tables it_data using 'name'.
+*  perform fill_table tables it_data using ls_data.
+*  perform sort_data tables it_data using 'name'.
 *
-*cl_demo_output=>display( it_data ).
+*  cl_demo_output=>display( it_data ).
 *
 *form fill_table tables it_table using new_struct type wa_struct.
 *
@@ -1809,7 +1809,144 @@ report zabap_exercises2.
 *endform.
 *form sort_data tables it_table using namecol type string.
 *
-*   sort it_table by (namecol) ascending.
+*  sort it_table by (namecol) ascending.
 *
 *endform.
 *
+*77---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Have a routine that receives an internal table (with at least three fields) and another internal table with the name of the columns to be ordered and order accordingly
+*
+*types: begin of wa_struct,
+*         id   type n length 8,
+*         name type c length 20,
+*         age  type i,
+*       end of wa_struct,
+*       tt_people type table of wa_struct with key id.
+*
+*data: wa_person type wa_struct,
+*      it_people type table of wa_struct with key id.
+*
+*start-of-selection.
+*
+*  perform fill_data.
+*
+*  data it_sort_columns type table_of_strings.
+*
+*  write 'Before SORT'. new-line.
+*  perform print_people using it_people.
+*
+*  append `NAME` to it_sort_columns.
+*
+*  perform sort_any_columns using it_sort_columns changing it_people.
+*
+*  refresh it_sort_columns.
+*
+*  write 'After SORT NAME'. new-line.
+*  perform print_people using it_people.
+*
+*  append `AGE` to it_sort_columns.
+*  append `ID` to it_sort_columns.
+*
+*  perform sort_any_columns using it_sort_columns changing it_people.
+*
+*  refresh it_sort_columns.
+*
+*  write 'After SORT AGE/ID'. new-line.
+*  perform print_people using it_people.
+*
+*  append `AGE` to it_sort_columns.
+*  append `NAME` to it_sort_columns.
+*  append `ID` to it_sort_columns.
+*
+*  perform sort_any_columns using it_sort_columns changing it_people.
+*
+*  refresh it_sort_columns.
+*
+*  write 'After SORT AGE/NAME/ID'. new-line.
+*  perform print_people using it_people.
+*
+*form fill_data.
+*
+*  wa_person-id = 3.
+*  wa_person-name = 'Pessoa1'.
+*  wa_person-age = 30.
+*  append wa_person to it_people.
+*
+*  wa_person-id = 6.
+*  wa_person-name = 'Pessoa2'.
+*  wa_person-age = 40.
+*  append wa_person to it_people.
+*
+*  wa_person-id = 2.
+*  wa_person-name = 'Pessoa3'.
+*  wa_person-age = 30.
+*  append wa_person to it_people.
+*
+*  wa_person-id = 1.
+*  wa_person-name = 'Pessoa4'.
+*  wa_person-age = 10.
+*  append wa_person to it_people.
+*
+*  wa_person-id = 5.
+*  wa_person-name = 'Pessoa5'.
+*  wa_person-age = 20.
+*  append wa_person to it_people.
+*
+*  wa_person-id = 4.
+*  wa_person-name = 'Pessoa6'.
+*  wa_person-age = 40.
+*  append wa_person to it_people.
+*
+*endform.
+*
+*form sort_any_columns using us_t_columns type table_of_strings changing ch_itab_people type tt_people.
+*
+*  data lv_number_of_lines type i.
+*
+*  describe table us_t_columns lines lv_number_of_lines.
+*
+*  data: lv_first_column  type string,
+*        lv_second_column type string,
+*        lv_third_column  type string.
+*
+*  case lv_number_of_lines.
+*    when 1.
+*      read table us_t_columns index 1 into lv_first_column.
+*
+*      sort ch_itab_people by (lv_first_column) ascending.
+*    when 2.
+*      read table us_t_columns index 1 into lv_first_column.
+*      read table us_t_columns index 2 into lv_second_column.
+*
+*      sort ch_itab_people by (lv_first_column) ascending (lv_second_column) ascending..
+*    when 3.
+*      read table us_t_columns index 1 into lv_first_column.
+*      read table us_t_columns index 2 into lv_second_column.
+*      read table us_t_columns index 3 into lv_third_column.
+*
+*      sort ch_itab_people by (lv_first_column) ascending (lv_second_column) ascending (lv_third_column) ascending.
+*  endcase.
+*
+*endform.
+*form print_people using us_itab_people type tt_people.
+*
+*  data lwa_person type wa_struct.
+*
+*  loop at us_itab_people into lwa_person.
+*    write: lwa_person-id, lwa_person-name, lwa_person-age.
+*    new-line.
+*  endloop.
+*
+*endform.    
+*
+*78---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Contains a select-options for numeric values and print the result of multiplying each number within the range of 3.
+*
+select-options sv_num 
+
+
+            
