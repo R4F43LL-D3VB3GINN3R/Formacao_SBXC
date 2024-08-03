@@ -1729,7 +1729,7 @@ report zabap_exercises2.
 *         weight type p decimals 2,
 *       end of wa_struct.
 *
-*data: 
+*data:
 *      it_data2 type table of wa_struct,
 *      ls_data  type wa_struct.
 *
@@ -1763,7 +1763,7 @@ report zabap_exercises2.
 *  new_struct-age    = 37.
 *  new_struct-weight = '65.50'.
 *  append new_struct to it_table.
-*  
+*
 *  sort it_data2 by name ascending.
 *
 *endform.
@@ -1771,6 +1771,45 @@ report zabap_exercises2.
 *76---------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
-*Have a routine that receives an internal table (with at least three columns) and the sort it by its first column.
+*Have a routine that receives an internal table (with at least three columns) and a string with the name of a column.
+"Sort the table by the specified column accordingly.
 *
-*Have a routine that receives an internal table (with at least three columns) and a string with the name of a column. Sort the table by the specified column accordingly.
+*types: begin of wa_struct,
+*  name type string,
+*  age type i,
+*  weight type p decimals 2,
+*end of wa_struct.
+*
+*data: it_data type table of wa_struct with key name,
+*      ls_data type wa_struct.
+*
+*START-OF-SELECTION.
+*
+*perform fill_table tables it_data using ls_data.
+*perform sort_data tables it_data using 'name'.
+*
+*cl_demo_output=>display( it_data ).
+*
+*form fill_table tables it_table using new_struct type wa_struct.
+*
+*  do 50 times.
+*
+*    new_struct-name = 'Rafael'.
+*    new_struct-age = 37.
+*    new_struct-weight = '88.50'.
+*    append new_struct to it_table.
+*
+*    new_struct-name = 'ZRafael'.
+*    new_struct-age = 37.
+*    new_struct-weight = '88.50'.
+*    append new_struct to it_table.
+*
+*  enddo.
+*
+*endform.
+*form sort_data tables it_table using namecol type string.
+*
+*   sort it_table by (namecol) ascending.
+*
+*endform.
+*
