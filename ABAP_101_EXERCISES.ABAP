@@ -1972,4 +1972,43 @@ report zabap_exercises2.
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *
-data
+*data: lv_range.
+*
+*select-options sv_num for lv_range.
+*
+*start-of-selection.
+*
+*  loop at sv_num.
+*    if sv_num-sign = 'I'.
+*      write: 'Include'.
+*    else.
+*      write: 'Exclude'.
+*    endif.
+*
+*    case sv_num-option.
+*      when 'EQ'.
+*        write: 'Equal', sv_num-low.
+*      when 'NE'.
+*        write: 'Not equal', sv_num-low.
+*      when 'LT'.
+*        write: 'Less than', sv_num-low.
+*      when 'LE'.
+*        write: 'Less or equal', sv_num-low.
+*      when 'GT'.
+*        write: 'Greater than', sv_num-low.
+*      when 'GE'.
+*        write: 'Greater or equal', sv_num-low.
+*      when 'BT'.
+*        write: 'between', sv_num-low, ' and ', sv_num-high.
+*      when 'BT'.
+*        write: 'not between', sv_num-low, ' and ', sv_num-high.
+*      when 'CP'.
+*        write: 'Contains pattern', sv_num-low.
+*      when 'NP'.
+*        write: 'not the pattern', sv_num-low.
+*    endcase.
+*
+*    new-line.
+*
+*  endloop.
+*
