@@ -2184,7 +2184,21 @@ report zabap_exercises2.
 *88---------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
-*Declare four parameters. 
-*The first two should have a character type and the last two a numeric type. 
-*Separate each pair in the selection screen using selection screen blocks. 
+*Declare four parameters.
+*The first two should have a character type and the last two a numeric type.
+*Separate each pair in the selection screen using selection screen blocks.
 *Both blocks should contain a frame so it's possible to see the separation between them.
+*
+*selection-screen: begin of block a1 with frame title text-001.
+*  parameters: p_num1 type i,
+*              p_num2 type i.
+*selection-screen: end of block a1.
+*selection-screen: begin of block b1 with frame title text-001.
+*  parameters: p_name1 type string,
+*              p_name2 type string.
+*selection-screen: end of block b1.
+*
+*89---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*
