@@ -2107,7 +2107,7 @@ report zabap_exercises2.
 *  lv_stringday = lv_date.
 *  lv_day = lv_stringday+4(2).
 *
-*  if lv_day gt 1 and lv_day lt 10.
+*  if lv_day ge 1 and lv_day le 10.
 *    p_cb2 = 'X'.
 *    p_cb3 = 'X'.
 *  endif.
@@ -2117,4 +2117,19 @@ report zabap_exercises2.
 *86---------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare three radio buttons and an input field.
+*If any radio button is selected, the input field should be cleared.
+*Note: the field should be cleared as soon any radio buttons is selected and not after the program is executed.
+*
+*selection-screen: begin of block a1 with frame title text-001.
+*  parameters: p_field type string,
+*              rb1     radiobutton group gp1 user-command x,
+*              rb2     radiobutton group gp1,
+*              rb3     radiobutton group gp1.
+*selection-screen: end of block a1.
+*
+*at selection-screen on radiobutton group gp1.
+*  if sy-ucomm = 'X'.
+*    clear p_field.
+*  endif.
 *
