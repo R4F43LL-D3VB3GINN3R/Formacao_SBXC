@@ -2201,4 +2201,53 @@ report zabap_exercises2.
 *89---------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare four parameters. The first two should have a character type and the last two a numeric type.
+*Separate each pair in the selection screen using selection screen blocks.
+*Both blocks should contain a frame so it's possible to see the separation between them.
+*Each frame should have a title.
+*Also, define a text for each parameter label using text elements.
+*
+*selection-screen: begin of block b1 with frame title text-001.
+*  parameters: p_name1 type string,
+*              p_name2 type string.
+*selection-screen: end of block b1.
+*selection-screen: begin of block a1 with frame title text-002.
+*  parameters: p_num1 type i,
+*              p_num2 type i.
+*selection-screen: end of block a1.
+*
+*90---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a parameter with a text element and translate it to a different language.
+*Then log into your system using another language and check which text appears in your program.
+*
+*parameters: p_text type string.
+*
+*91---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a checkbox and an input field side-by-side inside a frame.
+*
+*selection-screen: begin of block a1 with frame title text-002.
+*  selection-screen begin of line.
+*    position 1.
+*      parameters: cb1 as checkbox.
+*  selection-screen comment 3(4) text-001 for field p_field1.
+*    position 15.
+*      parameters: p_field1 type string.
+*  selection-screen end of line.
+*selection-screen: end of block a1.
+*
+*92---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a button inside a selection screen and show an information message when it is pressed.
+*
+*selection-screen pushbutton 10(8) text-001 user-command press.
+*
+*at selection-screen.
+*  if sy-ucomm = 'PRESS'.
+*    message 'BUTTOM WAS PRESSED' type 'S' display like 'I'.
+*  endif.
 *
