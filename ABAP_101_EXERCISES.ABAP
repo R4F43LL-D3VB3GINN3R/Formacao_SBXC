@@ -2128,8 +2128,63 @@ report zabap_exercises2.
 *              rb3     radiobutton group gp1.
 *selection-screen: end of block a1.
 *
-*at selection-screen on radiobutton group gp1.
+*  at selection-screen on radiobutton group gp1.
+*    if sy-ucomm = 'X'.
+*      clear p_field.
+*    endif.
+*
+*87---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare three radio buttons and two input fields.
+*If the first radio button is selected, both input fields should be displayed and ready for input.
+*If the second one is chosen, the first input field should be mandatory and the second one should blocked for input.
+*If the last radio button is chosen, both input fields should not be displayed in the screen.
+*
+*selection-screen: begin of block a1 with frame title text-001.
+*  parameters: p_field1 type string,
+*              p_field2 type string,
+*
+*              rb1      radiobutton group gp1 user-command x,
+*              rb2      radiobutton group gp1,
+*              rb3      radiobutton group gp1.
+*selection-screen: end of block a1.
+*
+*at selection-screen output.
 *  if sy-ucomm = 'X'.
-*    clear p_field.
+*    if rb1 = 'X'.
+*      loop at screen.
+*        if screen-name = 'p_field1' or screen-name = 'p_field2'.
+*          screen-input = 1.
+*          modify screen.
+*        endif.
+*      endloop.
+*    endif.
+*    if rb2 = 'X'.
+*      loop at screen.
+*        if screen-name = 'p_field1'.
+*          screen-required = 1.
+*          modify screen.
+*        endif.
+*        if screen-name = 'p_field2'.
+*          screen-input = 0.
+*          modify screen.
+*        endif.
+*      endloop.
+*    endif.
+*    if rb3 = 'X'.
+*      if screen-name = 'p_field1' or screen-name = 'p_field2'.
+*        screen-input = 0.
+*        screen-invisible = 1.
+*        modify screen.
+*      endif.
+*    endif.
 *  endif.
 *
+*88---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare four parameters. 
+*The first two should have a character type and the last two a numeric type. 
+*Separate each pair in the selection screen using selection screen blocks. 
+*Both blocks should contain a frame so it's possible to see the separation between them.
