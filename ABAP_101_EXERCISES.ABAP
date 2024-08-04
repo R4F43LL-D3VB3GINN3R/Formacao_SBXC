@@ -2058,3 +2058,14 @@ report zabap_exercises2.
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *Declare a parameter as a listbox containing all Airline codes com table SCARR
 *
+*tables scarr.
+*
+*selection-screen: begin of block a1 with frame title text-001.
+*  parameters: s_aircod type scarr-carrid as listbox visible length 15.
+*selection-screen: end of block a1.
+*
+*83---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare three parameters as checkboxes. 
+*Each of them will represent a different flight class (first, business and economy).
