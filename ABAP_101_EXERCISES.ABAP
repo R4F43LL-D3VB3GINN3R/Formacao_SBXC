@@ -2077,6 +2077,44 @@ report zabap_exercises2.
 *84---------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
 *-----------------------------------------------------------------------------------------------------------------------------------------------
-*Declare three parameters as radio buttons. 
+*Declare three parameters as radio buttons.
 *Each of them will represent a different flight class (first, business and economy).
+*
+*parameters: rb_first radiobutton group a1 default 'X',
+*            rb_busns radiobutton group a1,
+*            rb_econm radiobutton group a1.
+*
+*85---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare three parameters as checkboxes.
+*The first one should always be checked once the program is started.
+*Moreover, if the current day is between 1 and 10, the other two checkboxes should be checked as well once the program is started.
+*
+*data: lv_date      type sy-datum,
+*      lv_stringday type string,
+*      lv_day       type i.
+*
+*selection-screen: begin of block a1 with frame title text-001.
+*  parameters: p_cb1 as checkbox default 'X',
+*              p_cb2 as checkbox,
+*              p_cb3 as checkbox.
+*selection-screen: end of block a1.
+*
+*initialization.
+*
+*  lv_date = sy-datum.
+*  lv_stringday = lv_date.
+*  lv_day = lv_stringday+4(2).
+*
+*  if lv_day gt 1 and lv_day lt 10.
+*    p_cb2 = 'X'.
+*    p_cb3 = 'X'.
+*  endif.
+*
+*start-of-selection.
+*
+*86---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
 *
