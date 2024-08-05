@@ -1,59 +1,62 @@
-CLASS zcl_rla_candidato DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
+class ZCL_RLA_CANDIDATO definition
+  public
+  final
+  create public .
 
-  PUBLIC SECTION.
+public section.
 
-    DATA id_candidato TYPE zcandidato .
-    DATA id_employee TYPE zemployee .
+  data ID_CANDIDATO type ZCANDIDATO .
+  data ID_EMPLOYEE type ZEMPLOYEE .
 
     "metodo para definir o proximo id do candidato disponivel
-    CLASS-METHODS get_next_user
-      RETURNING
-        VALUE(id1) TYPE znn_candidatos-id_candidato .       "retorna o id do candidato da tabela znn_candidatos
+  class-methods GET_NEXT_USER
+    returning
+      value(ID1) type ZNN_CANDIDATOS-ID_CANDIDATO .         "retorna o id do candidato da tabela znn_candidatos
     "metodo para inserir o ficheiro txt no dataset
-    CLASS-METHODS insert_file_dataset
-      IMPORTING
-        !it_stringtable TYPE string_table       "tabela preenchida com o texto em formato string
-        !path_dataset   TYPE string                   "caminho para o arquivo no servidor
-        !id_string      TYPE string .                          "id do candidato em formato string
+  class-methods INSERT_FILE_DATASET
+    importing
+      !IT_STRINGTABLE type STRING_TABLE         "tabela preenchida com o texto em formato string
+      !PATH_DATASET type STRING                       "caminho para o arquivo no servidor
+      !ID_STRING type STRING .                                 "id do candidato em formato string
     "metodo que retorna o id do candidato em tipo string ou char10
-    CLASS-METHODS get_id_strchar
-      EXPORTING
-        !id_char   TYPE char10               "id do candidato em char10 com zeros à esquerda
-        !id_string TYPE string .       "id do candidato em string
+  class-methods GET_ID_STRCHAR
+    exporting
+      !ID_CHAR type CHAR10                   "id do candidato em char10 com zeros à esquerda
+      !ID_STRING type STRING .         "id do candidato em string
     "metodo para inserir candidato na tabela z znn_candidatos
-    CLASS-METHODS insert_cdt
-      IMPORTING
-        !id_cdt   TYPE znn_candidatos-id_candidato DEFAULT 0         "id do candidato
-        !name_cdt TYPE znn_candidatos-nome OPTIONAL .            "nome do candidato
+  class-methods INSERT_CDT
+    importing
+      !ID_CDT type ZNN_CANDIDATOS-ID_CANDIDATO default 0             "id do candidato
+      !NAME_CDT type ZNN_CANDIDATOS-NOME optional .              "nome do candidato
     "constructor que gera informacoes de um candidato
-    METHODS constructor
-      IMPORTING
-        !i_id_candidato TYPE zcandidato OPTIONAL "recebe um id de um candidato valido como parametro
-      EXCEPTIONS
-        invalid_cand .
+  methods CONSTRUCTOR
+    importing
+      !I_ID_CANDIDATO type ZCANDIDATO optional   "recebe um id de um candidato valido como parametro
+    exceptions
+      INVALID_CAND .
     "metodo para aprovar um candidato existente na tabela
-    METHODS aprovar
-      EXPORTING
-        !e_result TYPE znn_result .
+  methods APROVAR
+    exporting
+      !E_RESULT type ZNN_RESULT .
     "metodo para rejeitar um candidato existente na tabela
-    METHODS rejeitar
-      EXPORTING
-        !e_result TYPE znn_result .
+  methods REJEITAR
+    exporting
+      !E_RESULT type ZNN_RESULT .
     "metodo para ler um curriculo referente a um candidato inserido no servidor
-    CLASS-METHODS read_file_dataset
-      IMPORTING
-        !path_dataset    TYPE string "caminho para diretorio no servidor
-        !id_string       TYPE string "id do candidato em formato string
-      CHANGING
-        !it_stringtable2 TYPE string_table . "tabela interna string
-  PROTECTED SECTION.
+  class-methods READ_FILE_DATASET
+    importing
+      !PATH_DATASET type STRING      "caminho para diretorio no servidor
+      !ID_STRING type STRING         "id do candidato em formato string
+    changing
+      !IT_STRINGTABLE2 type STRING_TABLE .   "tabela interna string
+  methods INSERT_KEY_EMPLOYEE
+    importing
+      !ID_EMPLOYEE type CHAR8 .
+protected section.
 
     "constantes que recebem valor de estados diferente para cada funcionario
-    DATA const_aprovado TYPE zestado VALUE 1 ##NO_TEXT.
-    DATA const_rejeitado TYPE zestado VALUE 2 ##NO_TEXT.
+  data CONST_APROVADO type ZESTADO value 1 ##NO_TEXT.
+  data CONST_REJEITADO type ZESTADO value 2 ##NO_TEXT.
   PRIVATE SECTION.
 
     DATA nome TYPE znome .
@@ -72,7 +75,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_rla_candidato IMPLEMENTATION.
+CLASS ZCL_RLA_CANDIDATO IMPLEMENTATION.
 
 
 * <SIGNATURE>---------------------------------------------------------------------------------------+
@@ -90,7 +93,10 @@ CLASS zcl_rla_candidato IMPLEMENTATION.
     ENDIF.
 
     "atualizacao do estado do candidato
-    UPDATE znn_candidatos SET estado = estado WHERE id_candidato = me->id_candidato.
+    UPDATE znn_candidatos
+     SET estado = estado
+     alterado_por = sy-uname
+     WHERE id_candidato = me->id_candidato.
 
     "validacao do estado do candidato
     IF sy-subrc NE 0.
@@ -109,6 +115,7 @@ CLASS zcl_rla_candidato IMPLEMENTATION.
 * | [<---] E_RESULT                       TYPE        ZNN_RESULT
 * +--------------------------------------------------------------------------------------</SIGNATURE>
   METHOD aprovar.
+    DATA: id_emp TYPE char8.
 
     "recebe o metodo da classe
     me->alterar_estado(
@@ -117,6 +124,22 @@ CLASS zcl_rla_candidato IMPLEMENTATION.
       IMPORTING
         e_result = e_result             " Estrutura de resultados de operações
     ).
+
+    IF sy-subrc NE 0.
+      MESSAGE 'Não foi possível alterar o estado do candidato' TYPE 'E'.
+    ENDIF.
+
+    "metodo para cadastrar um novo colaborador na tabela.
+    zcl_rla_employee=>insert_employee(
+      IMPORTING
+        id_employee = id_emp           " Campo de caracteres do comprimento 8
+    ).
+
+    IF id_emp IS NOT INITIAL.
+
+      me->insert_key_employee( id_employee = id_emp ).
+
+    ENDIF.
 
   ENDMETHOD.
 
@@ -300,6 +323,27 @@ CLASS zcl_rla_candidato IMPLEMENTATION.
       MESSAGE 'Arquivo gravado com sucesso' TYPE 'S'.
     ELSE.
       MESSAGE 'Erro ao gravar o ficheiro no servidor.' TYPE 'E'.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_RLA_CANDIDATO->INSERT_KEY_EMPLOYEE
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] ID_EMPLOYEE                    TYPE        CHAR8
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD insert_key_employee.
+
+    "atualiza a tabela de candidatos inserindo a nova chave ao sistema
+    UPDATE znn_candidatos
+    SET id_employee = id_employee
+    WHERE id_candidato = me->id_candidato.
+
+    IF sy-subrc NE 0.
+      MESSAGE 'Não foi possível atualizar os dados do candidato.' TYPE 'E'.
+    ELSE.
+      zcl_rla_username=>insert_username( id_candidato =  id_candidato ).
     ENDIF.
 
   ENDMETHOD.
