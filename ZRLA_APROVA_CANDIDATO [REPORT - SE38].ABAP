@@ -1,3 +1,4 @@
+
 *&---------------------------------------------------------------------*
 *& Report ZRLA_APROVA_CANDIDATO
 *&---------------------------------------------------------------------*
@@ -14,6 +15,8 @@ TABLES: znn_candidatos.
 "estrutura para ajuda de pesquisa
 TYPES: BEGIN OF ty_cdt,
          id_candidato TYPE znn_candidatos-id_candidato,
+         nome type znn_candidatos-nome,
+         estado type znn_candidatos-estado,
        END OF ty_cdt.
 
 "tabela para receber o id do candidato
@@ -95,7 +98,7 @@ AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_id.
 
 "ao iniciar F8 a tabela tem de estar populada com os ids para a função retornar informacoes
 INITIALIZATION.
-  SELECT id_candidato FROM znn_candidatos INTO CORRESPONDING FIELDS OF TABLE it_cdt.
+  SELECT id_candidato nome estado FROM znn_candidatos INTO CORRESPONDING FIELDS OF TABLE it_cdt.
   SORT it_cdt BY id_candidato.
 
 START-OF-SELECTION.
@@ -206,8 +209,8 @@ FORM aceitar_candidatura .
   ).
 
   "se o estado do candidato for alterado...
-  IF e_result-rc NE 0.
-    MESSAGE e_result-mensagem TYPE 'I' DISPLAY LIKE 'E'.
+  IF e_result-rc eq 0.
+    MESSAGE e_result-mensagem TYPE 'I' display like 'S'.
   ENDIF.
 
 ENDFORM.
