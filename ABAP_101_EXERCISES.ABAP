@@ -2251,3 +2251,166 @@ report zabap_exercises2.
 *    message 'BUTTOM WAS PRESSED' type 'S' display like 'I'.
 *  endif.
 *
+*93---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Create a tabbed block with 3 tabs. Each of them should have a different content.
+*
+*selection-screen: begin of block a1 with frame.
+*  selection-screen: begin of block b1 with frame.
+*    parameters: p_field1 type string.
+*  selection-screen: end of block b1.
+*  selection-screen: begin of block c1 with frame.
+*    parameters: p_field2 type string.
+*  selection-screen: end of block c1.
+*  selection-screen: begin of block d1 with frame.
+*    parameters: p_field3 type string.
+*  selection-screen: end of block d1.
+*selection-screen: end of block a1.
+*
+*"or
+*
+*selection-screen begin of screen 1 as subscreen.
+*  parameter p_1 type string.
+*selection-screen end of screen 1.
+*selection-screen begin of screen 2 as subscreen.
+*  parameter p_2 type d.
+*selection-screen end of screen 2.
+*selection-screen begin of screen 3 as subscreen.
+*  parameter p_3 type t.
+*selection-screen end of screen 3.
+*selection-screen begin of tabbed block tb for 10 lines.
+*  selection-screen tab (10) tab1 user-command tab1_pressed default screen 1.
+*  selection-screen tab (10) tab2 user-command tab2_pressed default screen 2.
+*  selection-screen tab (10) tab3 user-command tab3_pressed default program
+*    z_abap101_088 screen 3.
+*selection-screen end of block tb.
+*
+*initialization.
+*  tab1 = 'String'.
+*  tab2 = 'Date'.
+*  tab3 = 'Time'.
+*
+*94---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare three parameters. There should be a horizontal line separating the first two ones and a blank line separating the last two.
+*
+*selection-screen: begin of block a1 with frame.
+*  selection-screen: begin of block b1 with frame.
+*    parameters: p_field1 type string.
+*  selection-screen: end of block b1.
+*  selection-screen skip 1.
+*  selection-screen: begin of block c1 with frame.
+*    parameters: p_field2 type string.
+*  selection-screen: end of block c1.
+*selection-screen: end of block a1.
+*
+*95---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a selection screen with 8 parameters and 3 select-options of your choice.
+*Execute your program and save a variant so you refer to your selection any time you want.
+*
+*selection-screen: begin of block a1 with frame.
+*  selection-screen: begin of block b1 with frame.
+*    parameters: p_field1 type string.
+*    parameters: p_field4 type string.
+*    parameters: p_field5 type string.
+*  selection-screen: end of block b1.
+*  selection-screen skip 1.
+*  selection-screen: begin of block c1 with frame.
+*    parameters: p_field2 type string.
+*    parameters: p_field6 type string.
+*    parameters: p_field7 type string.
+*  selection-screen: end of block c1.
+*  selection-screen skip 1.
+*  selection-screen: begin of block d1 with frame.
+*    parameters: p_fields type string.
+*    parameters: p_field8 type string.
+*    parameters: p_field9 type string.
+*  selection-screen: end of block d1.
+*selection-screen: end of block a1.
+*
+*96---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a selection screen with two date parameters.
+*The first once should be typed with the primitive type.
+*The second, with type SYST-DATUM.
+*Is there any different between them when filling the selection screen?
+*What about the documentation displayed when you hit F1 key?
+*
+*selection-screen: begin of block a1 with frame.
+*  parameters: p_name type string,
+*              p_date type sy-datum.
+*selection-screen: end of block a1.
+*
+**ABAP system field. System date. Can be set by GET TIME.
+*
+*97---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a selection screen with two time parameters.
+*The first once should be typed with the primitive type.
+*The second, with type SYST-UZEIT.
+*Is there any different between them when filling the selection screen?
+*What about the documentation displayed when you hit F1 key?
+*
+*selection-screen: begin of block a1 with frame.
+*  parameters: p_name type string,
+*              p_date type sy-uzeit.
+*selection-screen: end of block a1.
+*
+*ABAP system field. System time; can be set by GET TIME.
+*
+*98---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a selection screen with a parameter representing a date.
+*Then, save a variant so that this field is filled with the last day of the previous month every time the variant is used.
+*
+*selection-screen: begin of block a1 with frame.
+*  parameters: p_date type sy-datum.
+*selection-screen: end of block a1.
+*
+*initialization.
+*  p_date = sy-datum.
+*
+*99---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a selection screen with a parameter representing a specific time.
+*Then, save a variant so that this field is filled with the current time minus 3 hours every time the variant is used.
+*
+*selection-screen: begin of block a1 with frame.
+*  parameters: p_date type sy-uzeit.
+*selection-screen: end of block a1.
+*
+*initialization.
+*  p_date = sy-uzeit.
+*
+*100---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a selection screen with a select-options representing a date range.
+*Then, save a variant so that it is filled with a range between the first day of the current month and the current date every time the variant is used.
+*
+*data: lv_date type sy-datum.
+*
+*selection-screen: begin of block a1 with frame.
+*  select-options sv_date for lv_date default sy-datum.
+*selection-screen: end of block a1.
+*
+*101---------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*-----------------------------------------------------------------------------------------------------------------------------------------------
+*Declare a selection screen with a select-options representing a time range.
+*Then, save a variant so that these fields are filled with the start of day until the current time every time the variant is used.
+*
+*data: lv_time type sy-uzeit.
+*
+*selection-screen: begin of block a1 with frame.
+*  select-options sv_date for lv_time default sy-uzeit.
+*selection-screen: end of block a1.
+*
