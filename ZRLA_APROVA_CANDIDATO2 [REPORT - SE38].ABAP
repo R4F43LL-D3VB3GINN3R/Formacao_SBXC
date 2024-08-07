@@ -135,8 +135,8 @@ CLASS lcl_handle_events IMPLEMENTATION.
           "se houver dado a ser lido...
           IF sy-subrc EQ 0.
 
-            ls_data-estado = 2.
-            MODIFY it_candidatos FROM ls_data INDEX ls_row.
+            ls_data2-estado = 2.
+            MODIFY it_candidatos FROM ls_data2 INDEX ls_row2.
 
 *            "instancia o objeto da classe de candidatos
 *            CREATE OBJECT lo_rla_candidato
