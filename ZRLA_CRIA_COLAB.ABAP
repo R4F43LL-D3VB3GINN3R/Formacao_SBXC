@@ -35,6 +35,9 @@ DATA: it_username TYPE TABLE OF znn_username,
 DATA: it_employee TYPE TABLE OF ysap_employee,
       wa_employee TYPE ysap_employee.
 
+"tipo de contrato
+DATA: lv_tipocontrato TYPE c LENGTH 1.
+
 "tela de selecao
 SELECTION-SCREEN: BEGIN OF BLOCK a1 WITH FRAME TITLE TEXT-001.
 SELECTION-SCREEN: SKIP 1.
@@ -112,7 +115,7 @@ INITIALIZATION.
       icon_not_found        = 1
       outputfield_too_short = 2
       OTHERS                = 3.
-  IF sy-subrc <> 0.
+  IF sy-subrc NE 0.
     MESSAGE 'Não foi possível encontrar o elemento do tipo botão na tela de seleção' TYPE 'E'.
   ENDIF.
 
@@ -121,15 +124,19 @@ INITIALIZATION.
          nome
          FROM znn_candidatos
          INTO CORRESPONDING FIELDS OF TABLE it_cdt
-  WHERE estado = 1.
-  SORT it_candidatos BY id_candidato ASCENDING.
+         WHERE estado = 1.
+
+     IF sy-subrc NE 0.
+       MESSAGE 'Não foi possível encontras candidatos aprovados' TYPE 'E'.
+     ENDIF.
+
+  SORT it_cdt BY id_candidato ASCENDING.
 
   IF sy-subrc NE 0.
     MESSAGE 'Não foi possível encontrar um Candidato aprovado na base de dados' TYPE 'E' DISPLAY LIKE 'I'.
   ENDIF.
 
 START-OF-SELECTION.
-
   "verifica se o username gerado já existe
   SELECT * FROM znn_username INTO TABLE it_username.
   LOOP AT it_username INTO wa_username.
@@ -141,7 +148,40 @@ START-OF-SELECTION.
   "verifica se candidato possui um numero de empregado associado a ele.
   SELECT * FROM znn_candidatos INTO TABLE it_candidatos.
   LOOP AT it_candidatos INTO wa_candidatos.
-    IF wa_candidatos-id_employee is not initial.
+    IF wa_candidatos-id_employee IS INITIAL.
       MESSAGE 'O candidato já possui um número de identificação de funcionário' TYPE 'E'.
     ENDIF.
   ENDLOOP.
+
+  "verifica o tiipo de contrato
+  CASE 'X'.
+    WHEN rb1.
+      lv_tipocontrato = 'A'. "3 meses de contrato
+    WHEN rb2.
+      lv_tipocontrato = 'B'. "1 ano de contrato
+    WHEN rb3.
+      lv_tipocontrato = 'C'. "2 anos de contrato
+  ENDCASE.
+
+  "chama o metodo para analisar o tipo de contrato
+  "o metodo retorna a data final do contrato
+  zcl_rla_employee=>insert_employee2(
+    EXPORTING
+      id_candidato  = p_id
+      tipo_contrato = lv_tipocontrato
+  ).
+
+  IF sy-subrc NE 0.
+    MESSAGE 'Impossível cadastrar um novo colaborador.' TYPE 'E'.
+  ENDIF.
+
+  "chama o metodo para inserir um novo user
+  zcl_rla_username=>insert_username2(
+    EXPORTING
+      id_candidato = p_id
+      nickname     = p_user
+  ).
+
+  IF sy-subrc NE 0.
+    MESSAGE 'Impossível cadastrar um novo user' TYPE 'E'.
+  ENDIF.
