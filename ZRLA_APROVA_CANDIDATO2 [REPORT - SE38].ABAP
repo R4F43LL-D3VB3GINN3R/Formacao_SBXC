@@ -68,7 +68,7 @@ DATA: alv_functions TYPE REF TO cl_salv_functions_list,
 CLASS lcl_handle_events DEFINITION.
   PUBLIC SECTION.
     METHODS:
-     "metodo para detectar mudanças de eventos no alv
+      "metodo para detectar mudanças de eventos no alv
       on_user_command
                   FOR EVENT added_function OF cl_salv_events
         IMPORTING e_salv_function.
@@ -95,35 +95,38 @@ CLASS lcl_handle_events IMPLEMENTATION.
           "se houver dado a ser lido...
           IF sy-subrc EQ 0.
 
-            "instancia o objeto da classe de candidatos
-            CREATE OBJECT lo_rla_candidato
-              EXPORTING
-                i_id_candidato = ls_data-id_candidato " Id Candidato
-              EXCEPTIONS
-                invalid_cand   = 1                    " Candidato inválido
-                OTHERS         = 2.
+            ls_data-estado = 1.
+            MODIFY it_candidatos FROM ls_data INDEX ls_row.
 
-            "chama o metodo para aprovar uma candidatura.
-            lo_rla_candidato->aprovar(
-              IMPORTING
-                e_result = e_result                 " Estrutura de resultados de operações
-            ).
+*            "instancia o objeto da classe de candidatos
+*            CREATE OBJECT lo_rla_candidato
+*              EXPORTING
+*                i_id_candidato = ls_data-id_candidato " Id Candidato
+*              EXCEPTIONS
+*                invalid_cand   = 1                    " Candidato inválido
+*                OTHERS         = 2.
+*
+*            "chama o metodo para aprovar uma candidatura.
+*            lo_rla_candidato->aprovar(
+*              IMPORTING
+*                e_result = e_result                 " Estrutura de resultados de operações
+*            ).
+*
+*            "se a aprovacao for bem sucedida
+*            IF sy-subrc eq 0.
 
-            "se a aprovacao for bem sucedida
-            IF sy-subrc eq 0.
-
-              "remove o candidato aprovado da tabela
-              DELETE it_candidatos WHERE id_candidato = ls_data-id_candidato.
-            ENDIF.
-
-            "libera o espaco na memoria referente ao objeto criado
-            FREE lo_rla_candidato.
-
-            "renderiza novamente o alv
-            lo_alv->refresh( ).
+            "remove o candidato aprovado da tabela
           ENDIF.
+          MODIFY znn_candidatos FROM TABLE it_candidatos.
+          DELETE it_candidatos WHERE estado = 1.
+          "libera o espaco na memoria referente ao objeto criado
+          FREE lo_rla_candidato.
+
+          "renderiza novamente o alv
+          lo_alv->refresh( ).
+*          ENDIF.
         ENDLOOP.
-      "evento rejeitar candidato
+        "evento rejeitar candidato
       WHEN 'RMV'.
         "percorre as linhas do alv e le os dados da tabela interna referente a linha
         LOOP AT lt_rows INTO DATA(ls_row2).
@@ -132,33 +135,35 @@ CLASS lcl_handle_events IMPLEMENTATION.
           "se houver dado a ser lido...
           IF sy-subrc EQ 0.
 
-            "instancia o objeto da classe de candidatos
-            CREATE OBJECT lo_rla_candidato
-              EXPORTING
-                i_id_candidato = ls_data2-id_candidato " Id Candidato
-              EXCEPTIONS
-                invalid_cand   = 1                    " Candidato inválido
-                OTHERS         = 2.
+            ls_data-estado = 2.
+            MODIFY it_candidatos FROM ls_data INDEX ls_row.
 
-            "chama o metodo para rejeitar uma candidatura.
-            lo_rla_candidato->rejeitar(
-              IMPORTING
-                e_result = e_result                 " Estrutura de resultados de operações
-            ).
+*            "instancia o objeto da classe de candidatos
+*            CREATE OBJECT lo_rla_candidato
+*              EXPORTING
+*                i_id_candidato = ls_data2-id_candidato " Id Candidato
+*              EXCEPTIONS
+*                invalid_cand   = 1                    " Candidato inválido
+*                OTHERS         = 2.
+*
+*            "chama o metodo para rejeitar uma candidatura.
+*            lo_rla_candidato->rejeitar(
+*              IMPORTING
+*                e_result = e_result                 " Estrutura de resultados de operações
+*            ).
+*
+*            "se a rejeicao for bem sucedida
+*            IF sy-subrc EQ 0.
 
-            "se a rejeicao for bem sucedida
-            IF sy-subrc eq 0.
+           ENDIF.
+           MODIFY znn_candidatos FROM TABLE it_candidatos.
+           DELETE it_candidatos WHERE estado = 2.
 
-              "remove o candidato aprovado da tabela
-              DELETE it_candidatos WHERE id_candidato = ls_data2-id_candidato.
-            ENDIF.
-
-            "libera o espaco na memoria referente ao objeto criado
-            FREE lo_rla_candidato.
+           "libera o espaco na memoria referente ao objeto criado
+           FREE lo_rla_candidato.
 
             "renderiza novamente o alv
             lo_alv->refresh( ).
-          ENDIF.
         ENDLOOP.
       WHEN 'BACK'.
         LEAVE TO SCREEN 0.
