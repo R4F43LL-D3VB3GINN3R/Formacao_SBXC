@@ -1,17 +1,8 @@
 *&---------------------------------------------------------------------*
-*& Report ZRLA_APROVA_CANDIDATO2
+*& Include          ZRLA_CL_SALV_EVENTS
 *&---------------------------------------------------------------------*
-*&
-*&---------------------------------------------------------------------*
-REPORT zrla_aprova_candidato2.
+"classe de eventos
 
-"tabela z de candidatos
-TABLES znn_candidatos.
-
-"include com tela de menu de selecao
-*INCLUDE z_rla_top.
-
-*variaveis - estruturas - tabelas
 TYPES: BEGIN OF ty_candidatos,
          id_candidato TYPE znn_candidatos-id_candidato,
          nome         TYPE znn_candidatos-nome,
@@ -58,7 +49,8 @@ DATA: lo_alv_display TYPE REF TO cl_salv_display_settings.
 
 DATA: lo_alv TYPE REF TO cl_salv_table.
 
-"classe de eventos
+
+
 CLASS lcl_handle_events DEFINITION.
   PUBLIC SECTION.
     METHODS:
@@ -95,12 +87,12 @@ CLASS lcl_handle_events IMPLEMENTATION.
               IMPORTING
                 e_result = e_result                 " Estrutura de resultados de operações
             ).
-
+*            DELETE FROM it_candidatos WHERE id_candidato EQ ls_data-id_candidato.
           ENDIF.
           FREE lo_rla_candidato.
-          "remover da tabela interna os candidatos aprovados.
+          MODIFY TABLE it_candidatos FROM ls_data.
+          lo_alv->refresh( ).
         ENDLOOP.
-        lo_alv->refresh( ).
       WHEN 'BACK'.
         LEAVE TO SCREEN 0.
     ENDCASE.
@@ -113,6 +105,9 @@ ENDCLASS.
 DATA: o_handler TYPE REF TO lcl_handle_events.
 DATA: o_events TYPE REF TO cl_salv_events_table.
 
+*&---------------------------------------------------------------------*
+*& Include          ZRLA_DOWN
+*&---------------------------------------------------------------------*
 START-OF-SELECTION.
 
   PERFORM fill_data.    "preenche a tabela interna através da consulta do menu de selecao.
