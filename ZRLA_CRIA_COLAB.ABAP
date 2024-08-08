@@ -1,15 +1,7 @@
+"----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 *&---------------------------------------------------------------------*
-*& Report ZRLA_CRIA_COLAB
+*& Include          Z_RLA_TOP2
 *&---------------------------------------------------------------------*
-*&
-*&---------------------------------------------------------------------*
-REPORT zrla_cria_colab.
-
-"icons
-TYPE-POOLS: icon.
-"tabela z de candidatos
-TABLES: znn_candidatos.
-
 "estrutura para ajuda de pesquisa
 TYPES: BEGIN OF ty_cdt,
          id_candidato TYPE znn_candidatos-id_candidato,
@@ -37,7 +29,10 @@ DATA: it_employee TYPE TABLE OF ysap_employee,
 
 "tipo de contrato
 DATA: lv_tipocontrato TYPE c LENGTH 1.
-
+"----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Include          Z_RLA_SCREEN2
+*&---------------------------------------------------------------------*
 "tela de selecao
 SELECTION-SCREEN: BEGIN OF BLOCK a1 WITH FRAME TITLE TEXT-001.
 SELECTION-SCREEN: SKIP 1.
@@ -58,9 +53,8 @@ SELECTION-SCREEN: END OF LINE.
 SELECTION-SCREEN: END OF BLOCK d1.
 SELECTION-SCREEN: END OF BLOCK a1.
 
-"codigo relativo ao click do botao
-
 AT SELECTION-SCREEN.
+  "codigo relativo ao click do botao
   "consulta para retornar o valor maximo do id do candidato
   DATA: max_id TYPE znn_candidatos-id_candidato.
   SELECT MAX( id_candidato ) FROM znn_candidatos INTO max_id.
@@ -77,8 +71,7 @@ AT SELECTION-SCREEN.
           IMPORTING
             nickname     = p_user              " Char 20
         ).
-    ENDCASE.
-
+      ENDCASE.
   ELSE.
     MESSAGE 'Número do Candidato não encontrado' TYPE 'E'.
   ENDIF.
@@ -124,19 +117,34 @@ INITIALIZATION.
          nome
          FROM znn_candidatos
          INTO CORRESPONDING FIELDS OF TABLE it_cdt
-         WHERE estado = 1.
-
-     IF sy-subrc NE 0.
-       MESSAGE 'Não foi possível encontras candidatos aprovados' TYPE 'E'.
-     ENDIF.
-
-  SORT it_cdt BY id_candidato ASCENDING.
+  WHERE estado = 1.
 
   IF sy-subrc NE 0.
-    MESSAGE 'Não foi possível encontrar um Candidato aprovado na base de dados' TYPE 'E' DISPLAY LIKE 'I'.
+    MESSAGE 'Não foi possível encontras candidatos aprovados' TYPE 'E'.
   ENDIF.
 
+  "organiza a tabela para o search help
+  SORT it_cdt BY id_candidato ASCENDING.
+"----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Include          Z_RLA_DOWN2
+*&---------------------------------------------------------------------*
 START-OF-SELECTION.
+
+  PERFORM verifica_ids.       "verifica existência do user e da chave do candidato como colaborador
+  PERFORM verifica_contrato.  "verifica o tipo de contrato estabelecido
+  PERFORM cadastra_empregado. "insere o empregado e o relaciona com o candidato
+  PERFORM cadastra_user.      "insere o user e o relaciona com o candidato
+
+END-OF-SELECTION.
+  "-----------------------------------------------------------------------------------------------
+  "verifica existência do user e da chave do candidato como colaborador
+FORM verifica_ids.
+  "verifica se o campo com o nome do username foi gerado
+  IF p_user IS INITIAL.
+    MESSAGE 'É necessário gerar um nome para o user.' TYPE 'E' display like 'I'.
+  ENDIF.
+
   "verifica se o username gerado já existe
   SELECT * FROM znn_username INTO TABLE it_username.
   LOOP AT it_username INTO wa_username.
@@ -152,7 +160,10 @@ START-OF-SELECTION.
       MESSAGE 'O candidato já possui um número de identificação de funcionário' TYPE 'E'.
     ENDIF.
   ENDLOOP.
-
+ENDFORM.
+"-----------------------------------------------------------------------------------------------
+"verifica o tipo de contrato estabelecido
+FORM verifica_contrato.
   "verifica o tiipo de contrato
   CASE 'X'.
     WHEN rb1.
@@ -162,7 +173,10 @@ START-OF-SELECTION.
     WHEN rb3.
       lv_tipocontrato = 'C'. "2 anos de contrato
   ENDCASE.
-
+ENDFORM.
+"-----------------------------------------------------------------------------------------------
+"insere o empregado e o relaciona com o candidato
+FORM cadastra_empregado.
   "chama o metodo para analisar o tipo de contrato
   "o metodo retorna a data final do contrato
   zcl_rla_employee=>insert_employee2(
@@ -174,14 +188,20 @@ START-OF-SELECTION.
   IF sy-subrc NE 0.
     MESSAGE 'Impossível cadastrar um novo colaborador.' TYPE 'E'.
   ENDIF.
-
+ENDFORM.
+"-----------------------------------------------------------------------------------------------
+"insere o user e o relaciona com o candidato
+FORM cadastra_user.
   "chama o metodo para inserir um novo user
   zcl_rla_username=>insert_username2(
     EXPORTING
       id_candidato = p_id
       nickname     = p_user
   ).
-
   IF sy-subrc NE 0.
     MESSAGE 'Impossível cadastrar um novo user' TYPE 'E'.
+  ELSE.
+    MESSAGE 'Novo Colaborador cadastrado com sucesso' TYPE 'I' display like 'S'.
   ENDIF.
+ENDFORM.
+"----------------------------------------------------------------------------------------------------------------------------------------------------------------------
