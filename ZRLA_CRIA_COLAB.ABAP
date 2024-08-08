@@ -71,7 +71,7 @@ AT SELECTION-SCREEN.
           IMPORTING
             nickname     = p_user              " Char 20
         ).
-      ENDCASE.
+    ENDCASE.
   ELSE.
     MESSAGE 'Número do Candidato não encontrado' TYPE 'E'.
   ENDIF.
@@ -117,7 +117,8 @@ INITIALIZATION.
          nome
          FROM znn_candidatos
          INTO CORRESPONDING FIELDS OF TABLE it_cdt
-  WHERE estado = 1.
+  WHERE estado = 1
+  AND id_employee = 0.
 
   IF sy-subrc NE 0.
     MESSAGE 'Não foi possível encontras candidatos aprovados' TYPE 'E'.
@@ -142,7 +143,7 @@ END-OF-SELECTION.
 FORM verifica_ids.
   "verifica se o campo com o nome do username foi gerado
   IF p_user IS INITIAL.
-    MESSAGE 'É necessário gerar um nome para o user.' TYPE 'E' display like 'I'.
+    MESSAGE 'É necessário gerar um nome para o user.' TYPE 'E' DISPLAY LIKE 'I'.
   ENDIF.
 
   "verifica se o username gerado já existe
@@ -201,7 +202,9 @@ FORM cadastra_user.
   IF sy-subrc NE 0.
     MESSAGE 'Impossível cadastrar um novo user' TYPE 'E'.
   ELSE.
-    MESSAGE 'Novo Colaborador cadastrado com sucesso' TYPE 'I' display like 'S'.
+    CLEAR p_id.
+    CLEAR p_user.
+    MESSAGE 'Novo Colaborador cadastrado com sucesso' TYPE 'I' DISPLAY LIKE 'S'.
   ENDIF.
 ENDFORM.
 "----------------------------------------------------------------------------------------------------------------------------------------------------------------------
