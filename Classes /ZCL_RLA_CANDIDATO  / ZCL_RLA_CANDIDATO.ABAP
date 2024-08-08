@@ -55,8 +55,8 @@ public section.
 protected section.
 
     "constantes que recebem valor de estados diferente para cada funcionario
-  data CONST_APROVADO type ZESTADO value 1 ##NO_TEXT.
-  data CONST_REJEITADO type ZESTADO value 2 ##NO_TEXT.
+  data CONST_APROVADO type ZESTADO value '1' ##NO_TEXT.
+  data CONST_REJEITADO type ZESTADO value '2' ##NO_TEXT.
   PRIVATE SECTION.
 
     DATA nome TYPE znome .
